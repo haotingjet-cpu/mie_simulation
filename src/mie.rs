@@ -4,7 +4,6 @@ pub(crate) use std::f64::consts::PI;
 pub(crate) mod get_mu;
 pub(crate) mod little_func;
 pub(crate) mod mie_ab;
-pub(crate) mod mie_cd;
 pub(crate) mod mie_pi_tau;
 pub(crate) mod mie_q;
 pub(crate) mod mie_s1_s2;

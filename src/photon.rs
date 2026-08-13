@@ -33,7 +33,7 @@ pub(crate) type direc_vec = Vec3<f64>;
 
 #[repr(align(32))]
 pub(crate) struct Photon {
-    status: StokesVector,
-    direction: direc_vec,
-    start_location: direc_vec,
+    pub(crate) status: StokesVector,
+    pub(crate) direction: direc_vec,
+    pub(crate) start_location: direc_vec,
 }

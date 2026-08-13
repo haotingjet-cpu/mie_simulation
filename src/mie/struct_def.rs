@@ -1,5 +1,3 @@
-use num_complex::Complex;
-
 #[derive(Debug)]
 pub struct CrossSections {
     pub cext: f64,
@@ -20,11 +18,6 @@ pub struct Efficiencies {
     pub g: f64,
     pub qback: f64,
     pub qratio: f64,
-}
-
-pub enum IsCrossSections {
-    CrossSection(CrossSections),
-    Efficiencie(Efficiencies),
 }
 
 impl Efficiencies {
