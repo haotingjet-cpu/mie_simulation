@@ -27,3 +27,28 @@ pub(crate) struct Particle {
     pub(crate) diameter: f64,
     pub(crate) molarity: f64,
 }
+
+impl Particle {
+    pub(crate) fn get_half_round_s1s2(
+        &self,
+        frequency: i64,
+        wavelength: f64,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        if frequency <= 1 {
+            return Err("get_half_round_s1s2: frequency should bigger than 1".into());
+        };
+        let x = little_func::find_x(self.diameter, wavelength)?;
+
+        let mie_coef = Some(&mie_ab::auto_mie_ab(self.m, x)?);
+
+        let d = PI / (frequency as f64 - 1.0);
+        let mut s1_vec = Vec::with_capacity(frequency as usize);
+        let mut s2_vec = Vec::with_capacity(frequency as usize);
+        for mu in (0..frequency).map(|i| ((i as f64) * d).cos()) {
+            let (s1, s2) = self::mie_s1_s2::mies1s2_one_theta(self.m, x, mu, mie_coef)?;
+            s1_vec.push(s1);
+            s2_vec.push(s2);
+        }
+        Ok(())
+    }
+}

@@ -22,16 +22,14 @@ pub(crate) fn get_sigm_sta(
     Ok((sigma_s, sigma_t, sigma_a))
 }
 
-pub(crate) fn find_solution_musta(
-    particle1: &mie::Particle,
-    particle2: &mie::Particle,
+pub(crate) fn find_solution_mu_sta(
+    particle: &mie::Particle,
     wavelength: f64,
     n_medium: f64,
 ) -> Result<BulkCoefficients, Box<dyn Error>> {
-    let sigm_1 = get_sigm_sta(particle1, wavelength, n_medium)?;
-    let sigm_2 = get_sigm_sta(particle2, wavelength, n_medium)?;
-    let mu_s = (particle1.molarity * sigm_1.0 + particle2.molarity * sigm_2.0) * AVOGADRO;
-    let mu_t = (particle1.molarity * sigm_1.1 + particle2.molarity * sigm_2.1) * AVOGADRO;
-    let mu_a = (particle1.molarity * sigm_1.2 + particle2.molarity * sigm_2.2) * AVOGADRO;
+    let sigm_1 = get_sigm_sta(particle, wavelength, n_medium)?;
+    let mu_s = (particle.molarity * sigm_1.0) * AVOGADRO;
+    let mu_t = (particle.molarity * sigm_1.1) * AVOGADRO;
+    let mu_a = (particle.molarity * sigm_1.2) * AVOGADRO;
     Ok(BulkCoefficients { mu_s, mu_t, mu_a })
 }

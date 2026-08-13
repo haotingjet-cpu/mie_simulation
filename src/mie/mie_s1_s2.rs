@@ -1,4 +1,4 @@
-use crate::mie::{MieCoefficients, mie_ab, mie_pi_tau};
+use crate::mie::{MieCoefficients, PI, Particle, little_func, mie_ab, mie_pi_tau};
 use num_complex::Complex;
 use std::error::Error;
 
@@ -6,12 +6,12 @@ pub(crate) fn mies1s2_one_theta(
     m: Complex<f64>,
     x: f64,
     mu: f64,
-    mie_coef: Option<MieCoefficients>,
+    mie_coef: Option<&MieCoefficients>,
 ) -> Result<(Complex<f64>, Complex<f64>), Box<dyn Error>> {
     let nmax = (2.0 + x + 4.0 * x.cbrt()).round().max(3.0);
     let mie_coef = match mie_coef {
         Some(coef) => coef,
-        None => mie_ab::auto_mie_ab(m, x)?,
+        None => &mie_ab::auto_mie_ab(m, x)?,
     };
     let (an, bn) = (&mie_coef.an, &mie_coef.bn);
 

@@ -10,4 +10,5 @@ fn main() {
         diameter: 2.0,
         molarity: 0.1,
     };
+    let n_medium = Complex::new(1.332, 0.0);
 }
