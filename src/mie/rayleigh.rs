@@ -7,10 +7,8 @@ use std::error::Error;
 pub(crate) fn rayleigh_mie_q(
     particle: &mie::Particle,
     wavelength: f64,
-    nmedium: Option<f64>,
+    nmedium: f64,
 ) -> Result<Efficiencies, Box<dyn Error>> {
-    let nmedium = nmedium.unwrap_or(1.0);
-
     let m = particle.m / nmedium;
     let wavelength = wavelength / nmedium;
 

@@ -11,7 +11,7 @@ pub(crate) struct BulkCoefficients {
 pub(crate) fn get_sigm_sta(
     particle: &mie::Particle,
     wavelength: f64,
-    n_medium: Option<f64>,
+    n_medium: f64,
 ) -> Result<(f64, f64, f64), Box<dyn Error>> {
     let r = particle.diameter / 2.0;
     let effi = super::mie_q::auto_mie_q(particle, wavelength, n_medium, None)?;
@@ -28,8 +28,8 @@ pub(crate) fn find_solution_musta(
     wavelength: f64,
     n_medium: f64,
 ) -> Result<BulkCoefficients, Box<dyn Error>> {
-    let sigm_1 = get_sigm_sta(particle1, wavelength, Some(n_medium))?;
-    let sigm_2 = get_sigm_sta(particle2, wavelength, Some(n_medium))?;
+    let sigm_1 = get_sigm_sta(particle1, wavelength, n_medium)?;
+    let sigm_2 = get_sigm_sta(particle2, wavelength, n_medium)?;
     let mu_s = (particle1.molarity * sigm_1.0 + particle2.molarity * sigm_2.0) * AVOGADRO;
     let mu_t = (particle1.molarity * sigm_1.1 + particle2.molarity * sigm_2.1) * AVOGADRO;
     let mu_a = (particle1.molarity * sigm_1.2 + particle2.molarity * sigm_2.2) * AVOGADRO;

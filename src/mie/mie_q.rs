@@ -9,15 +9,14 @@ use std::error::Error;
 fn mie_q(
     particle: &mie::Particle,
     wavelength: f64,
-    nmedium: Option<f64>,
+    nmedium: f64,
     rayleigh_thresh: Option<f64>,
 ) -> Result<Efficiencies, Box<dyn Error>> {
-    let nmedium = nmedium.unwrap_or(1.00027316);
     let rayleigh_thresh = rayleigh_thresh.unwrap_or(0.05);
     let x = find_x(particle.diameter, wavelength)?;
 
     if x <= rayleigh_thresh {
-        return rayleigh::rayleigh_mie_q(particle, wavelength, Some(nmedium));
+        return rayleigh::rayleigh_mie_q(particle, wavelength, nmedium);
     }
 
     let nmax = (2.0 + x + 4.0 * (x.powf(1.0 / 3.0))).round() as usize;
@@ -81,19 +80,18 @@ fn mie_q(
 pub fn auto_mie_q(
     particle: &mie::Particle,
     wavelength: f64,
-    n_medium: Option<f64>,
+    n_medium: f64,
     crossover: Option<f64>,
 ) -> Result<Efficiencies, Box<dyn Error>> {
-    let n_medium = n_medium.unwrap_or(1.0);
     let crossover = crossover.unwrap_or(0.01);
 
     let wavelengh_eff = wavelength / n_medium;
     let x_eff = little_func::find_x(particle.diameter, wavelengh_eff)?;
 
     if x_eff < crossover {
-        return rayleigh::rayleigh_mie_q(&particle, wavelength, Some(n_medium));
+        return rayleigh::rayleigh_mie_q(&particle, wavelength, n_medium);
     } else {
-        return mie_q(&particle, wavelength, Some(n_medium), None);
+        return mie_q(&particle, wavelength, n_medium, None);
     }
 }
 
