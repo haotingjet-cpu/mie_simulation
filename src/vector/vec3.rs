@@ -41,6 +41,36 @@ where
     }
 }
 
+impl<'a, T> Add<Vec3<T>> for &'a mut Vec3<T>
+where
+    T: Add<Output = T> + Copy,
+{
+    type Output = &'a mut Vec3<T>;
+
+    fn add(self, rhs: Vec3<T>) -> Self::Output {
+        self.vec[0] = self.vec[0] + rhs.vec[0];
+        self.vec[1] = self.vec[1] + rhs.vec[1];
+        self.vec[2] = self.vec[2] + rhs.vec[2];
+
+        self
+    }
+}
+
+impl<'a, T> Mul<T> for &'a mut Vec3<T>
+where
+    T: Mul<Output = T> + Copy,
+{
+    type Output = &'a mut Vec3<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        self.vec[0] = self.vec[0] * rhs;
+        self.vec[1] = self.vec[1] * rhs;
+        self.vec[2] = self.vec[2] * rhs;
+
+        self
+    }
+}
+
 impl<T> Sub<Vec3<T>> for Vec3<T>
 where
     T: Sub<Output = T> + Copy,

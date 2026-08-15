@@ -6,6 +6,8 @@ pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
     molarity: 0.1,
 };
 
+pub(crate) const RADIUS: f64 = 1.0;
+
 pub(crate) const N_MEDIUM: f64 = 1.332;
 pub(crate) const N_BOUNDARY: f64 = 1.45;
 pub(crate) const WAVELENGH: f64 = 632.8;

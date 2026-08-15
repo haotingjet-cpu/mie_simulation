@@ -1,8 +1,9 @@
+use crate::simulat_const::*;
 use crate::{simulat_const::*, vector::Vec3};
 use rand::RngExt;
 
 #[inline(always)]
-pub(crate) fn is_in_container_fast(start: Vec3<f64>, path: Vec3<f64>) -> bool {
+pub(crate) fn is_in_container(start: &Vec3<f64>, path: &Vec3<f64>) -> bool {
     let new = start + path;
     let r = 1.0;
 
@@ -47,25 +48,23 @@ pub(crate) fn is_reflection(rng: &mut impl RngExt, theta_i_cos: f64) -> bool {
     if zeta < r { true } else { false }
 }
 
-/*    let a = path[0] * path[0] + path[1] * path[1];
-if a < 1e-12 {
-    return (false,start);
+fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>) {
+    let a = path[0] * path[0] + path[1] * path[1];
+    if a < 1e-12 {
+        return;
+    }
+
+    let mins_b = -2.0 * (start[0] * path[0] + start[1] * path[1]);
+    let c = start[0] * start[0] + start[1] * start[1] - RADIUS * RADIUS;
+
+    let d = mins_b * mins_b - 4.0 * a * c;
+
+    let d_sqrt = d.max(0.0).sqrt();
+
+    let x1 = (mins_b + d_sqrt) / (2.0 * a);
+
+    let x = x1.clamp(0.0, 1.0);
+
+    *start = *start + *path * x;
+    *path = *path * (1.0 - x);
 }
-
-let mins_b = -2.0 * (start[0] * path[0] + start[1] * path[1]);
-let c = start[0] * start[0] + start[1] * start[1] - r * r;
-
-let d = mins_b * mins_b - 4.0 * a * c;
-
-if d < 0.0 {
-    return (false,new);
-}
-
-let d_sqrt = d.sqrt();
-
-let x1 = (mins_b + d_sqrt) / (2.0 * a);
-
-let x = x1.clamp(0.0, 1.0);
-
-(false,start + path * x)
-*/
