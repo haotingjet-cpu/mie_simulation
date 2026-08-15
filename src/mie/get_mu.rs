@@ -1,5 +1,6 @@
 use crate::mie::AVOGADRO;
 use crate::mie::{self, PI};
+use crate::simulat_const::*;
 use std::error::Error;
 
 pub(crate) struct BulkCoefficients {
@@ -8,13 +9,9 @@ pub(crate) struct BulkCoefficients {
     pub mu_a: f64, // 體積吸收係數
 }
 
-pub(crate) fn get_sigm_sta(
-    particle: &mie::Particle,
-    wavelength: f64,
-    n_medium: f64,
-) -> Result<(f64, f64, f64), Box<dyn Error>> {
-    let r = particle.diameter / 2.0;
-    let effi = super::mie_q::auto_mie_q(particle, wavelength, n_medium, None)?;
+pub(crate) fn get_sigm_sta() -> Result<(f64, f64, f64), Box<dyn Error>> {
+    let r = POLYETHYLENE.diameter / 2.0;
+    let effi = super::mie_q::auto_mie_q(None)?;
     let area = PI * r * r;
     let sigma_s = area * effi.qsca;
     let sigma_t = area * effi.qext;
@@ -22,14 +19,10 @@ pub(crate) fn get_sigm_sta(
     Ok((sigma_s, sigma_t, sigma_a))
 }
 
-pub(crate) fn find_solution_mu_sta(
-    particle: &mie::Particle,
-    wavelength: f64,
-    n_medium: f64,
-) -> Result<BulkCoefficients, Box<dyn Error>> {
-    let sigm_1 = get_sigm_sta(particle, wavelength, n_medium)?;
-    let mu_s = (particle.molarity * sigm_1.0) * AVOGADRO;
-    let mu_t = (particle.molarity * sigm_1.1) * AVOGADRO;
-    let mu_a = (particle.molarity * sigm_1.2) * AVOGADRO;
+pub(crate) fn find_solution_mu_sta() -> Result<BulkCoefficients, Box<dyn Error>> {
+    let sigm_1 = get_sigm_sta()?;
+    let mu_s = (POLYETHYLENE.molarity * sigm_1.0) * AVOGADRO;
+    let mu_t = (POLYETHYLENE.molarity * sigm_1.1) * AVOGADRO;
+    let mu_a = (POLYETHYLENE.molarity * sigm_1.2) * AVOGADRO;
     Ok(BulkCoefficients { mu_s, mu_t, mu_a })
 }

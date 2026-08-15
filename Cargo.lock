@@ -58,6 +58,7 @@ dependencies = [
  "cfg-if",
  "libc",
  "r-efi",
+ "rand_core",
 ]
 
 [[package]]
@@ -111,6 +112,7 @@ name = "mie_simulate"
 version = "0.1.0"
 dependencies = [
  "num-complex",
+ "rand",
  "statrs",
 ]
 

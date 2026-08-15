@@ -1,3 +1,6 @@
+pub(crate) mod boundary;
+pub(crate) mod path;
+
 use crate::vector::{Matrix4, Vec3, Vec4};
 use num_complex::Complex;
 /// # StokesVector
@@ -36,4 +39,5 @@ pub(crate) struct Photon {
     pub(crate) status: StokesVector,
     pub(crate) direction: direc_vec,
     pub(crate) start_location: direc_vec,
+    pub(crate) last_plane_normal_v: direc_vec,
 }

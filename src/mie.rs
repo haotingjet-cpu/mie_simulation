@@ -1,3 +1,4 @@
+use crate::simulat_const::WAVELENGH;
 use num_complex::Complex;
 pub(crate) use std::f64::consts::PI;
 
@@ -31,12 +32,11 @@ impl Particle {
     pub(crate) fn get_half_round_s1s2(
         &self,
         frequency: i64,
-        wavelength: f64,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(Vec<Complex<f64>>, Vec<Complex<f64>>), Box<dyn std::error::Error>> {
         if frequency <= 1 {
             return Err("get_half_round_s1s2: frequency should bigger than 1".into());
         };
-        let x = little_func::find_x(self.diameter, wavelength)?;
+        let x = little_func::find_x(self.diameter, WAVELENGH)?;
 
         let mie_coef = Some(&mie_ab::auto_mie_ab(self.m, x)?);
 
@@ -48,6 +48,6 @@ impl Particle {
             s1_vec.push(s1);
             s2_vec.push(s2);
         }
-        Ok(())
+        Ok((s1_vec, s2_vec))
     }
 }

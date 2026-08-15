@@ -1,0 +1,52 @@
+mie_simulate v0.1.0 (C:\rust\mie_simulate)
+├── num-complex v0.4.6
+│   └── num-traits v0.2.19
+│       └── libm v0.2.16
+│       [build-dependencies]
+│       └── autocfg v1.5.1
+├── rand v0.10.2
+│   ├── chacha20 v0.10.1
+│   │   ├── cfg-if v1.0.4
+│   │   ├── cpufeatures v0.3.0
+│   │   └── rand_core v0.10.1
+│   ├── getrandom v0.4.3
+│   │   ├── cfg-if v1.0.4
+│   │   └── rand_core v0.10.1
+│   └── rand_core v0.10.1
+└── statrs v0.19.1
+    ├── approx v0.5.1
+    │   └── num-traits v0.2.19 (*)
+    ├── nalgebra v0.35.0
+    │   ├── approx v0.5.1 (*)
+    │   ├── matrixmultiply v0.3.11
+    │   │   └── rawpointer v0.2.1
+    │   │   [build-dependencies]
+    │   │   └── autocfg v1.5.1
+    │   ├── num-complex v0.4.6 (*)
+    │   ├── num-rational v0.4.2
+    │   │   ├── num-integer v0.1.47
+    │   │   │   └── num-traits v0.2.19 (*)
+    │   │   └── num-traits v0.2.19 (*)
+    │   ├── num-traits v0.2.19 (*)
+    │   ├── rand v0.10.2 (*)
+    │   ├── simba v0.10.2
+    │   │   ├── approx v0.5.1 (*)
+    │   │   ├── num-complex v0.4.6 (*)
+    │   │   ├── num-traits v0.2.19 (*)
+    │   │   └── wide v1.6.1
+    │   │       ├── bytemuck v1.25.2
+    │   │       └── safe_arch v1.1.0
+    │   │           └── bytemuck v1.25.2
+    │   └── typenum v1.20.1
+    ├── num-traits v0.2.19 (*)
+    ├── rand v0.10.2 (*)
+    └── thiserror v2.0.20
+        └── thiserror-impl v2.0.20 (proc-macro)
+            ├── proc-macro2 v1.0.107
+            │   └── unicode-ident v1.0.24
+            ├── quote v1.0.47
+            │   └── proc-macro2 v1.0.107 (*)
+            └── syn v3.0.3
+                ├── proc-macro2 v1.0.107 (*)
+                ├── quote v1.0.47 (*)
+                └── unicode-ident v1.0.24
