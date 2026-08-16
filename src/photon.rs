@@ -13,6 +13,10 @@ impl StokesVector {
     fn new_with_stocks(i: f64, q: f64, u: f64, v: f64) -> Self {
         Self::new(i, q, u, v)
     }
+
+    fn get_i(&self) -> f64 {
+        self[0]
+    }
 }
 
 pub(crate) type MuellerMatrix = Matrix4<f64>;

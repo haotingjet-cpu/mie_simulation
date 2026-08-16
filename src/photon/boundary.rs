@@ -1,3 +1,5 @@
+//! 外殼為無限延伸圓柱體
+
 use crate::simulat_const::*;
 use crate::vector::Dot;
 use crate::vector::Norm;
@@ -80,7 +82,7 @@ pub(crate) fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>)
 
 /// ## 得出單位向量
 pub(crate) fn get_normal(location: Vec3<f64>) -> Vec3<f64> {
-    location / location.norm()
+    location / location.norm() * -1.0
 }
 
 /// ## 得出折射後向量

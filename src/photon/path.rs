@@ -7,7 +7,7 @@ use rand::RngExt;
 impl Photon {
     fn get_mean_free_path(&self, rng: &mut impl RngExt, mu_t: f64) -> Vec3<f64> {
         let num: f64 = rng.random();
-        let s = -num.ln() / mu_t;
+        let s = -(1.0 - num).ln() / mu_t;
         self.direction * s
     }
 
@@ -16,31 +16,33 @@ impl Photon {
         theta_log: &mut Vec<f64>,
         rng: &mut impl RngExt,
         mu_t: f64,
-    ) {
+    ) -> Option<&mut Self> {
         let mut path = self.get_mean_free_path(rng, mu_t);
         loop {
             if path_end_is_in_container(&self.start_location, &path) {
                 self.start_location = self.start_location + path;
-                return;
+                return Some(self);
             } else {
                 boundary::caculate_intersection(&mut self.start_location, &mut path);
-                let theta_i_cos =
-                    self.start_location.dot(&path) / (self.start_location.norm() * path.norm());
                 let normal = boundary::get_normal(self.start_location);
+                let theta_i_cos = -path.dot(&normal).abs() / path.norm();
 
                 if boundary::is_reflection(rng, theta_i_cos) {
-                    path = path * (-1.0) + normal * 2.0 * (path.dot(&normal));
+                    path = path - normal * 2.0 * (path.dot(&normal));
                 } else {
                     let path_2 = boundary::get_refraction_vec(path, normal);
                     let theta = (path_2[0] * normal[0] + path_2[1] + normal[1])
                         .acos()
+                        .to_degrees()
                         .round() as usize;
-                    theta_log[theta] += self.w;
-                    return;
+                    theta_log[theta] += self.status.get_i();
+                    return None;
                 }
             }
         }
     }
 
-    pub(crate) fn collision_event(&mut self) {}
+    pub(crate) fn collision_event(&mut self) -> &mut Self {
+        self
+    }
 }
