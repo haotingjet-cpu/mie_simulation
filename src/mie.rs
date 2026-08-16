@@ -16,10 +16,6 @@ pub(crate) mod struct_def;
 
 pub(crate) const AVOGADRO: f64 = 6.02214076e23;
 
-pub(crate) trait CIterator<T>: Iterator<Item = T> + Clone {}
-
-impl<I, T> CIterator<T> for I where I: Iterator<Item = T> + Clone {}
-
 pub(crate) struct MieCoefficients {
     pub(crate) an: Vec<Complex<f64>>,
     pub(crate) bn: Vec<Complex<f64>>,
