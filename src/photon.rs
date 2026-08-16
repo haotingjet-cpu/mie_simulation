@@ -15,9 +15,9 @@ impl StokesVector {
     }
 }
 
-type MuellerMatrix = Matrix4<f64>;
+pub(crate) type MuellerMatrix = Matrix4<f64>;
 impl MuellerMatrix {
-    fn get_mueller_matrix_with_s1s2(s1: Complex<f64>, s2: Complex<f64>) -> Self {
+    pub(crate) fn get_mueller_matrix_with_s1s2(s1: Complex<f64>, s2: Complex<f64>) -> Self {
         let s11 = (s1.norm_sqr() + s2.norm_sqr()) / 2.0;
         let s12 = (s2.norm_sqr() - s1.norm_sqr()) / 2.0;
         let s33 = (s1 * (s2.conj())).re;

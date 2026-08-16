@@ -11,7 +11,6 @@ use crate::vector::{Vec3, Vec4};
 fn main() -> Result<(), Box<dyn Error>> {
     let polyethylene = simulat_const::POLYETHYLENE;
     let bulkcoef = mie::get_mu::find_solution_mu_sta()?;
-    let theta_s1_s2 = polyethylene.get_half_round_s1s2(900)?;
     let photon = photon::Photon {
         status: Vec4::new(10.0, 0.0, 0.0, 0.0),
         direction: Vec3::new(1.0, 0.0, 0.0),
