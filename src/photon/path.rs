@@ -1,6 +1,6 @@
 use super::boundary::path_end_is_in_container;
 use crate::photon::{Photon, boundary};
-use crate::simulat_const::FREQUENCY;
+use crate::simulat_const::{FREQUENCY, N_BOUNDARY, N_MEDIUM};
 use crate::vector::{Dot, Norm, Vec3};
 use rand::RngExt;
 
@@ -11,7 +11,12 @@ impl Photon {
         self.direction * s
     }
 
-    pub(crate) fn move_a_path(&mut self, theta_log: Vec<f64>, rng: &mut impl RngExt, mu_t: f64) {
+    pub(crate) fn move_a_path(
+        &mut self,
+        theta_log: &mut Vec<f64>,
+        rng: &mut impl RngExt,
+        mu_t: f64,
+    ) {
         let mut path = self.get_mean_free_path(rng, mu_t);
         loop {
             if path_end_is_in_container(&self.start_location, &path) {
@@ -26,10 +31,16 @@ impl Photon {
                 if boundary::is_reflection(rng, theta_i_cos) {
                     path = path * (-1.0) + normal * 2.0 * (path.dot(&normal));
                 } else {
-                    todo!("這邊要處理折射還有紀錄，但還沒寫完");
+                    let path_2 = boundary::get_refraction_vec(path, normal);
+                    let theta = (path_2[0] * normal[0] + path_2[1] + normal[1])
+                        .acos()
+                        .round() as usize;
+                    theta_log[theta] += self.w;
                     return;
                 }
             }
         }
     }
+
+    pub(crate) fn collision_event(&mut self) {}
 }
