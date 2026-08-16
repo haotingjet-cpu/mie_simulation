@@ -19,7 +19,9 @@
 - $s<s_{boundary}$：候選位置在液體內部，是有效碰撞點，進入第三步
 - $s\ge s_{boundary}$：光子先到邊界，跳到第四步處理邊界事件
 
-**第三步：碰撞事件（在液體內部）。** 扣權重 $\Delta W=(\mu_a/\mu_t)W$，然後用對應粒子的相位函數 CDF 反演抽出散射角，更新方向，用該粒子的 Mueller 矩陣更新斯托克斯向量 $$\mathbf{S}_{new} = \mathbf{M}_i(\theta) \mathbf{R}(\psi) \mathbf{S}_{old}$$ 處理完後回到第一步，重新抽下一段自由路徑。
+**第三步：碰撞事件（在液體內部）。** 扣權重 $\Delta W=(\mu_a/\mu_t)W$，然後用對應粒子的相位函數 CDF 反演抽出散射角，更新方向，用該粒子的 Mueller 矩陣更新斯托克斯向量 
+$$\mathbf{S}_{new} = \mathbf{M}_i(\theta) \mathbf{R}(\psi) \mathbf{S}_{old}$$ 
+處理完後回到第一步，重新抽下一段自由路徑。
 
 **第四步：邊界事件。** 用 Fresnel 反射係數 $R(\theta_i)$（由入射角、兩側折射率算出）抽機率分岔：
 
