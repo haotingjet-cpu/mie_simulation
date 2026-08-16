@@ -15,3 +15,10 @@ where
 }
 
 // ===========================================================================================
+
+pub(crate) trait Norm<T>
+where
+    T: Add<Output = T> + Mul<Output = T> + Copy,
+{
+    fn norm(&self) -> T;
+}

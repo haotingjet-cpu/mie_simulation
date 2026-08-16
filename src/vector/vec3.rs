@@ -1,5 +1,5 @@
-use super::Dot;
-use std::ops::{Add, Index, IndexMut, Mul, Sub};
+use super::{Dot, Norm};
+use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};
 
 #[repr(align(32))]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -101,6 +101,19 @@ where
     }
 }
 
+impl<T> Div<T> for Vec3<T>
+where
+    T: Div<Output = T> + Copy,
+{
+    type Output = Self;
+
+    fn div(self, rhs: T) -> Self::Output {
+        Vec3 {
+            vec: [self.vec[0] / rhs, self.vec[1] / rhs, self.vec[2] / rhs],
+        }
+    }
+}
+
 impl<T> Dot<T> for Vec3<T>
 where
     T: Add<Output = T> + Mul<Output = T> + Copy,
@@ -129,11 +142,11 @@ impl<T> IndexMut<usize> for Vec3<T> {
     }
 }
 
-impl<T> Vec3<T>
+impl<T> Norm<T> for Vec3<T>
 where
     T: Add<Output = T> + Mul<Output = T> + Copy,
 {
-    fn abs(&self) -> T {
+    fn norm(&self) -> T {
         self.vec[0] * self.vec[0] + self.vec[1] * self.vec[1] + self.vec[2] * self.vec[2]
     }
 }

@@ -1,9 +1,10 @@
 use crate::simulat_const::*;
-use crate::{simulat_const::*, vector::Vec3};
+use crate::vector::Norm;
+use crate::vector::Vec3;
 use rand::RngExt;
 
 #[inline(always)]
-pub(crate) fn is_in_container(start: &Vec3<f64>, path: &Vec3<f64>) -> bool {
+pub(crate) fn path_end_is_in_container(start: &Vec3<f64>, path: &Vec3<f64>) -> bool {
     let new = start + path;
     let r = 1.0;
 
@@ -48,7 +49,7 @@ pub(crate) fn is_reflection(rng: &mut impl RngExt, theta_i_cos: f64) -> bool {
     if zeta < r { true } else { false }
 }
 
-fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>) {
+pub(crate) fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>) {
     let a = path[0] * path[0] + path[1] * path[1];
     if a < 1e-12 {
         return;
@@ -67,4 +68,8 @@ fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>) {
 
     *start = *start + *path * x;
     *path = *path * (1.0 - x);
+}
+
+pub(crate) fn get_normal(location: Vec3<f64>) -> Vec3<f64> {
+    location / location.norm()
 }

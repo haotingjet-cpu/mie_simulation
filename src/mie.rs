@@ -1,4 +1,7 @@
-use crate::{photon::MuellerMatrix, simulat_const::WAVELENGH};
+use crate::{
+    photon::MuellerMatrix,
+    simulat_const::{FREQUENCY, WAVELENGH},
+};
 use num_complex::Complex;
 pub(crate) use std::f64::consts::PI;
 
@@ -31,25 +34,17 @@ pub(crate) struct Particle {
 impl Particle {
     pub(crate) fn get_theta_vs_mueller_matrix(
         &self,
-        frequency: i64,
     ) -> Result<Vec<MuellerMatrix>, Box<dyn std::error::Error>> {
-        if frequency <= 1 {
+        if FREQUENCY <= 1 {
             return Err("get_half_round_s1s2: frequency should bigger than 1".into());
         };
         let x = little_func::find_x(self.diameter, WAVELENGH)?;
 
         let mie_coef = Some(&mie_ab::auto_mie_ab(self.m, x)?);
 
-        let d = PI / (frequency as f64 - 1.0);
-        let mut s1_vec = Vec::with_capacity(frequency as usize);
-        let mut s2_vec = Vec::with_capacity(frequency as usize);
-        for mu in (0..frequency).map(|i| ((i as f64) * d).cos()) {
-            let (s1, s2) = self::mie_s1_s2::mies1s2_one_theta(self.m, x, mu, mie_coef)?;
-            s1_vec.push(s1);
-            s2_vec.push(s2);
-        }
+        let d = PI / (FREQUENCY as f64 - 1.0);
 
-        let x = (0..frequency)
+        let x = (0..FREQUENCY)
             .map(|i| ((i as f64) * d).cos())
             .map(|mu| self::mie_s1_s2::mies1s2_one_theta(self.m, x, mu, mie_coef).unwrap())
             .map(|(s1, s2)| MuellerMatrix::get_mueller_matrix_with_s1s2(s1, s2))

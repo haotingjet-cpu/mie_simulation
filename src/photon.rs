@@ -40,4 +40,5 @@ pub(crate) struct Photon {
     pub(crate) direction: direc_vec,
     pub(crate) start_location: direc_vec,
     pub(crate) last_plane_normal_v: direc_vec,
+    pub(crate) w: f64,
 }

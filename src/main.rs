@@ -16,6 +16,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         direction: Vec3::new(1.0, 0.0, 0.0),
         start_location: Vec3::new(0.0, 0.0, 0.0),
         last_plane_normal_v: Vec3::new(0.0, 0.0, 1.0),
+        w: 0.0,
     };
+
+    let mul_theta = polyethylene.get_theta_vs_mueller_matrix()?;
     todo!()
 }
