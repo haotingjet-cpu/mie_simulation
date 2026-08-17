@@ -17,6 +17,8 @@ pub(crate) const THETA_C_SIN: f64 = N_BOUNDARY / N_MEDIUM;
 pub(crate) const THETA_C_SIN_REC: f64 = THETA_C_SIN.recip();
 pub(crate) const THETA_C_SIN_2: f64 = THETA_C_SIN * THETA_C_SIN;
 pub(crate) const THETA_C_SIN_2_REC: f64 = THETA_C_SIN_2.recip();
+pub(crate) const FREQUENCY_IDX: usize = FREQUENCY as usize;
+pub(crate) const PHOTON_CONST: usize = 5;
 
 // ===== 編譯期參數特性確保 =============================
 pub(crate) const FREQUENCY: i64 = 1800;

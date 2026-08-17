@@ -7,10 +7,9 @@ use std::error::Error;
 
 use crate::{
     get_cdf::get_cdf_fn,
-    simulat_const::FREQUENCY,
+    simulat_const::FREQUENCY_IDX,
     vector::{Vec3, Vec4},
 };
-use rand::RngExt;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let polyethylene = simulat_const::POLYETHYLENE;
@@ -18,12 +17,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mul_theta = polyethylene.get_theta_vs_mueller_matrix()?;
 
-    let _cfd = get_cdf_fn(&mul_theta);
+    let cdf = get_cdf_fn(&mul_theta);
 
     let mut rng = rand::rng();
-    let mut theta_log = [0.0; FREQUENCY as usize];
+    let mut theta_log = [0.0; FREQUENCY_IDX as usize];
 
-    for _ in 0..5 {
+    for _ in 0..simulat_const::PHOTON_CONST {
         let mut photon = photon::Photon {
             status: Vec4::new(10.0, 0.0, 0.0, 0.0),
             direction: Vec3::new(1.0, 0.0, 0.0),
@@ -33,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
         'uni: loop {
             match photon.move_a_path(&mut theta_log, &mut rng, bulkcoef.mu_t) {
-                Some(t) => t.collision_event(&bulkcoef),
+                Some(t) => t.collision_event(&mut rng, &bulkcoef, &mul_theta, &cdf),
                 None => break 'uni,
             }
         }
