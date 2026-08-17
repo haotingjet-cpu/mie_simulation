@@ -1,4 +1,5 @@
 pub(crate) mod boundary;
+pub(crate) mod collision;
 pub(crate) mod path;
 
 use crate::vector::{Matrix4, Vec3, Vec4};
