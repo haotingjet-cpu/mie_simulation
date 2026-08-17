@@ -6,6 +6,7 @@ mod vector;
 use std::error::Error;
 
 use crate::{
+    get_cdf::get_cfd_fn,
     simulat_const::FREQUENCY,
     vector::{Vec3, Vec4},
 };
@@ -17,8 +18,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mul_theta = polyethylene.get_theta_vs_mueller_matrix()?;
 
+    let _cfd = get_cfd_fn(&mul_theta);
+
     let mut rng = rand::rng();
-    let mut theta_log = vec![0.0; FREQUENCY as usize];
+    let mut theta_log = [0.0; FREQUENCY as usize];
 
     for _ in 0..5 {
         let mut photon = photon::Photon {

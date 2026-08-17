@@ -30,7 +30,7 @@ pub(crate) struct Particle {
 impl Particle {
     pub(crate) fn get_theta_vs_mueller_matrix(
         &self,
-    ) -> Result<Vec<MuellerMatrix>, Box<dyn std::error::Error>> {
+    ) -> Result<[MuellerMatrix; FREQUENCY as usize], Box<dyn std::error::Error>> {
         if FREQUENCY <= 1 {
             return Err("get_half_round_s1s2: frequency should bigger than 1".into());
         };
@@ -40,11 +40,13 @@ impl Particle {
 
         let d = PI / (FREQUENCY as f64 - 1.0);
 
-        let x = (0..FREQUENCY)
+        let x: Vec<MuellerMatrix> = (0..FREQUENCY)
             .map(|i| ((i as f64) * d).cos())
             .map(|mu| self::mie_s1_s2::mies1s2_one_theta(self.m, x, mu, mie_coef).unwrap())
             .map(|(s1, s2)| MuellerMatrix::get_mueller_matrix_with_s1s2(s1, s2))
+            .take(FREQUENCY as usize)
             .collect();
+        let x: [MuellerMatrix; FREQUENCY as usize] = x.try_into().expect("this won't happened");
         Ok(x)
     }
 }

@@ -1,5 +1,6 @@
 use super::boundary::path_end_is_in_container;
 use crate::photon::{Photon, boundary};
+use crate::simulat_const::FREQUENCY;
 use crate::vector::{Dot, Norm, Vec3};
 use rand::RngExt;
 
@@ -12,7 +13,7 @@ impl Photon {
 
     pub(crate) fn move_a_path(
         &mut self,
-        theta_log: &mut Vec<f64>,
+        theta_log: &mut [f64; FREQUENCY as usize],
         rng: &mut impl RngExt,
         mu_t: f64,
     ) -> Option<&mut Self> {
