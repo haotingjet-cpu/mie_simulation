@@ -24,8 +24,9 @@ impl Photon {
                 return Some(self);
             } else {
                 boundary::caculate_intersection(&mut self.start_location, &mut path);
+                self.start_location = self.start_location * 0.999;
                 let normal = boundary::get_normal(self.start_location);
-                let theta_i_cos = -path.dot(&normal).abs() / path.norm();
+                let theta_i_cos = path.dot(&normal).abs() / path.norm();
 
                 if boundary::is_reflection(rng, theta_i_cos) {
                     path = path - normal * 2.0 * (path.dot(&normal));

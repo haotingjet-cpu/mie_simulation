@@ -21,6 +21,7 @@ pub(crate) struct MieCoefficients {
     pub(crate) bn: Vec<Complex<f64>>,
 }
 
+#[derive(Debug)]
 pub(crate) struct Particle {
     pub(crate) m: Complex<f64>,
     pub(crate) diameter: f64,

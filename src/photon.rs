@@ -52,6 +52,7 @@ impl Photon {
         if self.w <= LIMIT_W_LINE {
             let zeta: f64 = rng.random();
             if zeta < M.recip() {
+                println!("alive");
                 self.w = self.w * M;
                 return true;
             }

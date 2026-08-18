@@ -7,22 +7,27 @@ use std::error::Error;
 
 use crate::{
     get_cdf::get_cdf_fn,
-    simulat_const::FREQUENCY_IDX,
+    simulat_const::*,
     vector::{Vec3, Vec4},
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
     let polyethylene = simulat_const::POLYETHYLENE;
     let bulkcoef = mie::get_mu::find_solution_mu_sta()?;
-
+    println!("mu_t = {}", bulkcoef.mu_t);
+    println!("mean free path = {}", 1.0 / bulkcoef.mu_t);
     let mul_theta = polyethylene.get_theta_vs_mueller_matrix()?;
 
     let cdf = get_cdf_fn(&mul_theta);
+    println!("cdf: {:?}", cdf);
 
     let mut rng = rand::rng();
     let mut theta_log = [0.0; FREQUENCY_IDX as usize];
 
-    for _ in 0..simulat_const::PHOTON_CONST {
+    for tim in 0..simulat_const::PHOTON_CONST {
+        if tim % 10000 == 0 {
+            println!("{}", tim)
+        }
         let mut photon = photon::Photon {
             status: Vec4::new(10.0, 0.0, 0.0, 0.0),
             direction: Vec3::new(1.0, 0.0, 0.0),
@@ -30,6 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             last_plane_normal_v: Vec3::new(0.0, 0.0, 1.0),
             w: 1.0,
         };
+
         'uni: loop {
             match photon.move_a_path(&mut theta_log, &mut rng, bulkcoef.mu_t) {
                 Some(t) => {
@@ -38,11 +44,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                         break 'uni;
                     };
                 }
-                None => break 'uni,
+                None => {
+                    break 'uni;
+                }
             }
         }
     }
-
-    println!("{:?}", theta_log);
+    println!("{:?}", polyethylene);
+    for i in 0..FREQUENCY_IDX {
+        theta_log[i] = theta_log[i].log10();
+        print!(
+            "|角度 {}: 值取 log 後{}| , ",
+            (i as i64) * 180 / FREQUENCY,
+            theta_log[i]
+        );
+    }
     Ok(())
 }

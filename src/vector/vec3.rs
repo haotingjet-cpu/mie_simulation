@@ -144,10 +144,10 @@ impl<T> IndexMut<usize> for Vec3<T> {
 
 impl<T> Norm<T> for Vec3<T>
 where
-    T: Add<Output = T> + Mul<Output = T> + Div<Output = T> + Copy,
+    T: num_traits::Float + Copy,
 {
     fn norm(&self) -> T {
-        self.vec[0] * self.vec[0] + self.vec[1] * self.vec[1] + self.vec[2] * self.vec[2]
+        (self.vec[0] * self.vec[0] + self.vec[1] * self.vec[1] + self.vec[2] * self.vec[2]).sqrt()
     }
 
     fn normalize(self) -> Self {
