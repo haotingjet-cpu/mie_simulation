@@ -1,4 +1,4 @@
-use crate::mie::{MieCoefficients, PI, Particle, little_func, mie_ab, mie_pi_tau};
+use crate::mie::{MieCoefficients, mie_ab, mie_pi_tau};
 use num_complex::Complex;
 use std::error::Error;
 

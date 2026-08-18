@@ -2,7 +2,10 @@ pub(crate) mod boundary;
 pub(crate) mod collision;
 pub(crate) mod path;
 
-use crate::vector::{Matrix4, Vec3, Vec4};
+use crate::{
+    simulat_const::{LIMIT_W_LINE, M},
+    vector::{Matrix4, Vec3, Vec4},
+};
 use num_complex::Complex;
 /// # StokesVector
 /// * i: f64 -> Total intensity
@@ -11,10 +14,6 @@ use num_complex::Complex;
 /// * v: f64 -> Degree of circular polarization
 pub(crate) type StokesVector = Vec4<f64>;
 impl StokesVector {
-    fn new_with_stocks(i: f64, q: f64, u: f64, v: f64) -> Self {
-        Self::new(i, q, u, v)
-    }
-
     fn get_i(&self) -> f64 {
         self[0]
     }
@@ -37,13 +36,28 @@ impl MuellerMatrix {
     }
 }
 
-pub(crate) type direc_vec = Vec3<f64>;
+pub(crate) type DirecVec = Vec3<f64>;
 
 #[repr(align(32))]
 pub(crate) struct Photon {
     pub(crate) status: StokesVector,
-    pub(crate) direction: direc_vec,
-    pub(crate) start_location: direc_vec,
-    pub(crate) last_plane_normal_v: direc_vec,
+    pub(crate) direction: DirecVec,
+    pub(crate) start_location: DirecVec,
+    pub(crate) last_plane_normal_v: DirecVec,
     pub(crate) w: f64,
+}
+
+impl Photon {
+    pub(crate) fn russion_roulette(&mut self, rng: &mut impl rand::RngExt) -> bool {
+        if self.w <= LIMIT_W_LINE {
+            let zeta: f64 = rng.random();
+            if zeta < M.recip() {
+                self.w = self.w * M;
+                return true;
+            }
+            return false;
+        }
+
+        true
+    }
 }

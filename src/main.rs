@@ -32,11 +32,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
         'uni: loop {
             match photon.move_a_path(&mut theta_log, &mut rng, bulkcoef.mu_t) {
-                Some(t) => t.collision_event(&mut rng, &bulkcoef, &mul_theta, &cdf),
+                Some(t) => {
+                    t.collision_event(&mut rng, &bulkcoef, &mul_theta, &cdf);
+                    if !(t.russion_roulette(&mut rng)) {
+                        break 'uni;
+                    };
+                }
                 None => break 'uni,
             }
         }
     }
 
-    todo!()
+    println!("{:?}", theta_log);
+    Ok(())
 }

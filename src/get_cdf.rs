@@ -1,3 +1,4 @@
+use crate::mie::PI;
 use crate::photon::MuellerMatrix;
 use crate::simulat_const::*;
 use rand::RngExt;
@@ -7,7 +8,8 @@ pub(crate) fn get_cdf_fn(mulmat: &[MuellerMatrix; FREQUENCY_IDX]) -> [f64; FREQU
     let mut sum = 0.0;
 
     for i in 0..FREQUENCY_IDX {
-        let s1 = mulmat[i][0][0]; // s11
+        let theta_i = (i as f64 / FREQUENCY_IDX as f64) * PI;
+        let s1 = mulmat[i][0][0] * theta_i.sin();
         sum += s1;
         cdf[i] = sum;
     }

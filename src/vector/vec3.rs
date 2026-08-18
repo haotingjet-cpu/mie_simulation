@@ -1,4 +1,4 @@
-use super::{Dot, Norm};
+use super::{Cross, Dot, Norm};
 use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};
 
 #[repr(align(32))]
@@ -144,9 +144,26 @@ impl<T> IndexMut<usize> for Vec3<T> {
 
 impl<T> Norm<T> for Vec3<T>
 where
-    T: Add<Output = T> + Mul<Output = T> + Copy,
+    T: Add<Output = T> + Mul<Output = T> + Div<Output = T> + Copy,
 {
     fn norm(&self) -> T {
         self.vec[0] * self.vec[0] + self.vec[1] * self.vec[1] + self.vec[2] * self.vec[2]
+    }
+
+    fn normalize(self) -> Self {
+        self / self.norm()
+    }
+}
+
+impl<T> Cross<T> for Vec3<T>
+where
+    T: Sub<Output = T> + Mul<Output = T> + Copy,
+{
+    fn cross(&self, rhs: &Self) -> Self {
+        Vec3::new(
+            self[1] * rhs[2] - self[2] * rhs[1],
+            self[2] * rhs[0] - self[0] * rhs[2],
+            self[0] * rhs[1] - self[1] * rhs[0],
+        )
     }
 }

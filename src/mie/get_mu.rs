@@ -1,12 +1,12 @@
 use crate::mie::AVOGADRO;
-use crate::mie::{self, PI};
+use crate::mie::PI;
 use crate::simulat_const::*;
 use std::error::Error;
 
 pub(crate) struct BulkCoefficients {
-    pub mu_s: f64, // 體積散射係數
-    pub mu_t: f64, // 體積消光係數
-    pub mu_a: f64, // 體積吸收係數
+    pub mu_s: f64,  // 體積散射係數
+    pub mu_t: f64,  // 體積消光係數
+    pub _mu_a: f64, // 體積吸收係數
 }
 
 pub(crate) fn get_sigm_sta() -> Result<(f64, f64, f64), Box<dyn Error>> {
@@ -24,5 +24,9 @@ pub(crate) fn find_solution_mu_sta() -> Result<BulkCoefficients, Box<dyn Error>>
     let mu_s = (POLYETHYLENE.molarity * sigm_1.0) * AVOGADRO;
     let mu_t = (POLYETHYLENE.molarity * sigm_1.1) * AVOGADRO;
     let mu_a = (POLYETHYLENE.molarity * sigm_1.2) * AVOGADRO;
-    Ok(BulkCoefficients { mu_s, mu_t, mu_a })
+    Ok(BulkCoefficients {
+        mu_s,
+        mu_t,
+        _mu_a: mu_a,
+    })
 }

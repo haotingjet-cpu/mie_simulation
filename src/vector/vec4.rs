@@ -1,5 +1,5 @@
 use super::Dot;
-use std::ops::{Add, Index, IndexMut, Mul, Sub};
+use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};
 
 #[repr(align(32))]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -56,6 +56,24 @@ where
                 self.vec[1] * rhs,
                 self.vec[2] * rhs,
                 self.vec[3] * rhs,
+            ],
+        }
+    }
+}
+
+impl<T> Div<T> for Vec4<T>
+where
+    T: Div<Output = T> + Copy,
+{
+    type Output = Self;
+
+    fn div(self, rhs: T) -> Self::Output {
+        Vec4 {
+            vec: [
+                self.vec[0] / rhs,
+                self.vec[1] / rhs,
+                self.vec[2] / rhs,
+                self.vec[3] / rhs,
             ],
         }
     }

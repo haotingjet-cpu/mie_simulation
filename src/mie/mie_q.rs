@@ -1,4 +1,3 @@
-use crate::mie;
 use crate::mie::little_func::{self, find_x};
 use crate::mie::mie_ab;
 use crate::mie::rayleigh;

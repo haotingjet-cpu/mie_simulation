@@ -1,4 +1,3 @@
-use crate::mie;
 use crate::mie::little_func::find_x;
 use crate::mie::struct_def::{self, Efficiencies};
 use crate::simulat_const::*;

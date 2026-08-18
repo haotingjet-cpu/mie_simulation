@@ -15,58 +15,6 @@ impl<T> Matrix4<T> {
     }
 }
 
-impl Matrix4<f32> {
-    pub(crate) fn identity_mat() -> Self {
-        Self {
-            rows: [
-                Vec4::new(1.0, 0.0, 0.0, 0.0),
-                Vec4::new(0.0, 1.0, 0.0, 0.0),
-                Vec4::new(0.0, 0.0, 1.0, 0.0),
-                Vec4::new(0.0, 0.0, 0.0, 1.0),
-            ],
-        }
-    }
-}
-
-impl Matrix4<f64> {
-    pub(crate) fn identity_mat() -> Self {
-        Self {
-            rows: [
-                Vec4::new(1.0, 0.0, 0.0, 0.0),
-                Vec4::new(0.0, 1.0, 0.0, 0.0),
-                Vec4::new(0.0, 0.0, 1.0, 0.0),
-                Vec4::new(0.0, 0.0, 0.0, 1.0),
-            ],
-        }
-    }
-}
-
-impl Matrix4<i32> {
-    pub(crate) fn identity_mat() -> Self {
-        Self {
-            rows: [
-                Vec4::new(1, 0, 0, 0),
-                Vec4::new(0, 1, 0, 0),
-                Vec4::new(0, 0, 1, 0),
-                Vec4::new(0, 0, 0, 1),
-            ],
-        }
-    }
-}
-
-impl Matrix4<i64> {
-    pub(crate) fn identity_mat() -> Self {
-        Self {
-            rows: [
-                Vec4::new(1, 0, 0, 0),
-                Vec4::new(0, 1, 0, 0),
-                Vec4::new(0, 0, 1, 0),
-                Vec4::new(0, 0, 0, 1),
-            ],
-        }
-    }
-}
-
 impl<T> Add<Matrix4<T>> for Matrix4<T>
 where
     T: Add<Output = T> + Copy,

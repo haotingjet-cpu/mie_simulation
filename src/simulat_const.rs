@@ -12,6 +12,9 @@ pub(crate) const N_MEDIUM: f64 = 1.332;
 pub(crate) const N_BOUNDARY: f64 = 1.45;
 pub(crate) const WAVELENGH: f64 = 632.8;
 
+pub(crate) const LIMIT_W_LINE: f64 = 1e-3;
+pub(crate) const M: f64 = 6.0;
+
 // ===== 加速計算用參數，由推倒來不可改 ===================
 pub(crate) const THETA_C_SIN: f64 = N_BOUNDARY / N_MEDIUM;
 pub(crate) const THETA_C_SIN_REC: f64 = THETA_C_SIN.recip();
@@ -25,5 +28,9 @@ pub(crate) const FREQUENCY: i64 = 1800;
 const _: () = {
     if FREQUENCY % 180 != 0 {
         panic!();
+    }
+
+    if M.round() != M {
+        panic!()
     }
 };

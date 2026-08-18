@@ -15,7 +15,7 @@ pub(crate) fn mie_pi_tau(mu: f64, nmax: f64) -> Result<(Vec<f64>, Vec<f64>), Box
     let mut p_last2 = p[0];
     let mut p_last1 = p[1];
 
-    for n in (2..nmax) {
+    for n in 2..nmax {
         let p_curr =
             ((2.0 * n as f64 + 1.0) * (mu * p_last1) - (n as f64 + 1.0) * p_last2) / n as f64;
         let t_curr = (n as f64 + 1.0) * mu * p_curr - (n as f64 + 2.0) * p_last1;
