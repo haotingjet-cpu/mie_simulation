@@ -5,7 +5,7 @@ use num_complex::Complex;
 pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
     m: Complex::new(1.4998, 0.0),
     diameter: 1200.0,
-    molarity: 1.04e-14,
+    molarity: 1.04e-12,
 };
 pub(crate) const RADIUS: f64 = 5e6;
 pub(crate) const N_MEDIUM: f64 = 1.332;
