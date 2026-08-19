@@ -4,6 +4,69 @@ mie_simulate v0.1.0 (C:\rust\mie_simulate)
 │       └── libm v0.2.16
 │       [build-dependencies]
 │       └── autocfg v1.5.1
+├── num-traits v0.2.19 (*)
+├── plotters v0.3.7
+│   ├── chrono v0.4.45
+│   │   ├── num-traits v0.2.19 (*)
+│   │   └── windows-link v0.2.1
+│   ├── font-kit v0.14.3
+│   │   ├── bitflags v2.13.1
+│   │   ├── byteorder v1.5.0
+│   │   ├── dwrote v0.11.5
+│   │   │   ├── lazy_static v1.5.0
+│   │   │   ├── libc v0.2.189
+│   │   │   ├── winapi v0.3.9
+│   │   │   └── wio v0.2.2
+│   │   │       └── winapi v0.3.9
+│   │   ├── float-ord v0.3.2
+│   │   ├── lazy_static v1.5.0
+│   │   ├── libc v0.2.189
+│   │   ├── log v0.4.33
+│   │   ├── pathfinder_geometry v0.5.1
+│   │   │   ├── log v0.4.33
+│   │   │   └── pathfinder_simd v0.5.6
+│   │   │       [build-dependencies]
+│   │   │       └── rustc_version v0.4.1
+│   │   │           └── semver v1.0.28
+│   │   ├── pathfinder_simd v0.5.6 (*)
+│   │   ├── walkdir v2.5.0
+│   │   │   ├── same-file v1.0.6
+│   │   │   │   └── winapi-util v0.1.11
+│   │   │   │       └── windows-sys v0.61.2
+│   │   │   │           └── windows-link v0.2.1
+│   │   │   └── winapi-util v0.1.11 (*)
+│   │   └── winapi v0.3.9
+│   ├── image v0.24.9
+│   │   ├── bytemuck v1.25.2
+│   │   ├── byteorder v1.5.0
+│   │   ├── color_quant v1.1.0
+│   │   ├── jpeg-decoder v0.3.2
+│   │   ├── num-traits v0.2.19 (*)
+│   │   └── png v0.17.16
+│   │       ├── bitflags v1.3.2
+│   │       ├── crc32fast v1.5.0
+│   │       │   └── cfg-if v1.0.4
+│   │       ├── fdeflate v0.3.7
+│   │       │   └── simd-adler32 v0.3.10
+│   │       ├── flate2 v1.1.9
+│   │       │   ├── crc32fast v1.5.0 (*)
+│   │       │   └── miniz_oxide v0.8.9
+│   │       │       ├── adler2 v2.0.1
+│   │       │       └── simd-adler32 v0.3.10
+│   │       └── miniz_oxide v0.8.9 (*)
+│   ├── lazy_static v1.5.0
+│   ├── num-traits v0.2.19 (*)
+│   ├── pathfinder_geometry v0.5.1 (*)
+│   ├── plotters-backend v0.3.7
+│   ├── plotters-bitmap v0.3.7
+│   │   ├── gif v0.12.0
+│   │   │   ├── color_quant v1.1.0
+│   │   │   └── weezl v0.1.12
+│   │   ├── image v0.24.9 (*)
+│   │   └── plotters-backend v0.3.7
+│   ├── plotters-svg v0.3.7
+│   │   └── plotters-backend v0.3.7
+│   └── ttf-parser v0.20.0
 ├── rand v0.10.2
 │   ├── chacha20 v0.10.1
 │   │   ├── cfg-if v1.0.4
