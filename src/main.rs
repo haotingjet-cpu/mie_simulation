@@ -28,11 +28,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     for tim in 0..simulat_const::PHOTON_CONST {
         if tim % (simulat_const::PHOTON_CONST / 1000) == 0 {
             print!(
-                "\r[{}:{}] | [{}{}]",
+                "\r[{}:{}] | [{}{}] | [{} %]",
                 simulat_const::PHOTON_CONST,
                 tim,
                 "#".repeat(tim * 100 / PHOTON_CONST),
-                ".".repeat(100 - tim * 100 / PHOTON_CONST)
+                ".".repeat(100 - tim * 100 / PHOTON_CONST),
+                tim * 100 / simulat_const::PHOTON_CONST
             );
             io::stdout().flush()?;
         }
