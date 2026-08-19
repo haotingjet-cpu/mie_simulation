@@ -21,9 +21,10 @@ pub(crate) fn get_sigm_sta() -> Result<(f64, f64, f64), Box<dyn Error>> {
 
 pub(crate) fn find_solution_mu_sta() -> Result<BulkCoefficients, Box<dyn Error>> {
     let sigm_1 = get_sigm_sta()?;
-    let mu_s = (POLYETHYLENE.molarity * sigm_1.0) * AVOGADRO;
-    let mu_t = (POLYETHYLENE.molarity * sigm_1.1) * AVOGADRO;
-    let mu_a = (POLYETHYLENE.molarity * sigm_1.2) * AVOGADRO;
+    let molarity_per_nm3 = POLYETHYLENE.molarity / L_TO_NM3;
+    let mu_s = (molarity_per_nm3 * sigm_1.0) * AVOGADRO;
+    let mu_t = (molarity_per_nm3 * sigm_1.1) * AVOGADRO;
+    let mu_a = (molarity_per_nm3 * sigm_1.2) * AVOGADRO;
     Ok(BulkCoefficients {
         mu_s,
         mu_t,

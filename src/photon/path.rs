@@ -1,6 +1,6 @@
 use super::boundary::path_end_is_in_container;
 use crate::photon::{Photon, boundary};
-use crate::simulat_const::FREQUENCY;
+use crate::simulat_const::{FREQUENCY, FREQUENCY_IDX};
 use crate::vector::{Dot, Norm, Vec3};
 use rand::RngExt;
 
@@ -32,10 +32,11 @@ impl Photon {
                     path = path - normal * 2.0 * (path.dot(&normal));
                 } else {
                     let path_2 = boundary::get_refraction_vec(path, normal);
-                    let theta = (path_2[0] * normal[0] + path_2[1] * normal[1]).acos()
-                        / (crate::mie::PI)
-                        * (FREQUENCY as f64);
-                    let theta = (theta.round() as usize).min(FREQUENCY as usize - 1);
+                    let theta = Vec3::new(path_2[0], path_2[1], 0.0)
+                        .dot(&Vec3::new(1.0, 0.0, 0.0))
+                        .acos();
+                    let theta = ((theta / crate::mie::PI * (FREQUENCY as f64)).round() as usize)
+                        .min(FREQUENCY_IDX - 1);
                     theta_log[theta] += self.status.get_i();
                     return None;
                 }

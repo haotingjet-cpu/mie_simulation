@@ -1,9 +1,11 @@
+mod draw;
 mod get_cdf;
 mod mie;
 mod photon;
 mod simulat_const;
 mod vector;
 use std::error::Error;
+use std::io::{self, Write};
 
 use crate::{
     get_cdf::get_cdf_fn,
@@ -19,14 +21,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mul_theta = polyethylene.get_theta_vs_mueller_matrix()?;
 
     let cdf = get_cdf_fn(&mul_theta);
-    println!("cdf: {:?}", cdf);
 
     let mut rng = rand::rng();
     let mut theta_log = [0.0; FREQUENCY_IDX as usize];
 
     for tim in 0..simulat_const::PHOTON_CONST {
-        if tim % 10000 == 0 {
-            println!("{}", tim)
+        if tim % (simulat_const::PHOTON_CONST / 1000) == 0 {
+            print!(
+                "\r[{}:{}] | [{}{}]",
+                simulat_const::PHOTON_CONST,
+                tim,
+                "#".repeat(tim * 100 / PHOTON_CONST),
+                ".".repeat(100 - tim * 100 / PHOTON_CONST)
+            );
+            io::stdout().flush()?;
         }
         let mut photon = photon::Photon {
             status: Vec4::new(10.0, 0.0, 0.0, 0.0),
@@ -51,13 +59,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
     println!("{:?}", polyethylene);
-    for i in 0..FREQUENCY_IDX {
-        theta_log[i] = theta_log[i].log10();
-        print!(
-            "|角度 {}: 值取 log 後{}| , ",
-            (i as i64) * 180 / FREQUENCY,
-            theta_log[i]
-        );
-    }
+    let theta_log: Vec<f64> = theta_log.into();
+    let mut r_max = -1e200;
+    let mut r_min = 1e200;
+    theta_log.iter().for_each(|&x| {
+        let x = x.log10();
+        if x < r_min {
+            r_min = x.round()
+        } else if x > r_max {
+            r_max = x.round() + 1.0
+        }
+    });
+    println!("{}, {}", r_min, r_max);
+    draw::draw(theta_log, r_min, r_max)?;
     Ok(())
 }
