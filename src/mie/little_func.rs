@@ -12,24 +12,30 @@ pub(crate) fn find_x(diameter: f64, wavelength: f64) -> Result<f64, Box<dyn Erro
     return Ok(x);
 }
 
-pub(crate) fn arange<T>(start: T, end: T) -> Result<Vec<f64>, Box<dyn Error>>
+pub(crate) fn arange<T>(start: T, end: T, step: Option<f64>) -> Result<Vec<f64>, Box<dyn Error>>
 where
     T: TryInto<usize>,
     <T as TryInto<usize>>::Error: Error + 'static,
 {
-    Ok(arange_iter(start, end)?.collect())
+    Ok(arange_iter(start, end, step)?.collect())
 }
 
 pub(crate) fn arange_iter<T>(
     start: T,
     end: T,
+    step: Option<f64>,
 ) -> Result<impl DoubleEndedIterator<Item = f64> + Clone, Box<dyn Error>>
 where
     T: TryInto<usize>,
     <T as TryInto<usize>>::Error: Error + 'static,
 {
+    let step = step.unwrap_or_else(|| 1.0f64);
     let start_idx: usize = start.try_into()?;
     let end_idx: usize = end.try_into()?;
 
-    Ok((start_idx..end_idx).map(|x| x as f64))
+    let steps_count = ((end_idx - start_idx) as f64 * step.recip()).round() as usize + 1;
+
+    let iterable = (0..steps_count).map(move |x| (start_idx as f64) + (x as f64) * step);
+
+    Ok(iterable)
 }

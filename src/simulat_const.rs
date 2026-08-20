@@ -5,7 +5,7 @@ use num_complex::Complex;
 pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
     m: Complex::new(1.4998, 0.0),
     diameter: 1200.0,
-    molarity: 1.04e-12,
+    molarity: 1.04e-14,
 };
 pub(crate) const RADIUS: f64 = 5e6;
 pub(crate) const N_MEDIUM: f64 = 1.332;
@@ -15,7 +15,9 @@ pub(crate) const WAVELENGH: f64 = 632.8;
 pub(crate) const LIMIT_W_LINE: f64 = 1e-3;
 pub(crate) const M: f64 = 6.0;
 
-pub(crate) const PHOTON_CONST: usize = 100000000;
+pub(crate) const PHOTON_CONST: usize = 10000000000;
+pub(crate) const FREQUENCY: i64 = 2160;
+pub(crate) const SCALE: u32 = 10;
 
 // ===== 加速計算用參數，由推倒來不可改 ===================
 pub(crate) const THETA_C_SIN: f64 = N_BOUNDARY / N_MEDIUM;
@@ -26,7 +28,6 @@ pub(crate) const FREQUENCY_IDX: usize = FREQUENCY as usize;
 pub(crate) const L_TO_NM3: f64 = 1e24;
 
 // ===== 編譯期參數特性確保 =============================
-pub(crate) const FREQUENCY: i64 = 180;
 const _: () = {
     if FREQUENCY % 180 != 0 {
         panic!();

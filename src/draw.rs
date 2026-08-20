@@ -1,20 +1,20 @@
+use crate::simulat_const::SCALE;
 use plotters::prelude::*;
 
 pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::error::Error>> {
-    let scale = 3;
-    let width = 1000 * scale;
-    let height = 1000 * scale;
+    let width = 1000 * SCALE;
+    let height = 1000 * SCALE;
 
     let root =
         BitMapBackend::new("mie_scattering_high_dpi.png", (width, height)).into_drawing_area();
     root.fill(&WHITE)?;
 
-    let root = root.margin(50 * scale, 50 * scale, 50 * scale, 50 * scale);
+    let root = root.margin(50 * SCALE, 50 * SCALE, 50 * SCALE, 50 * SCALE);
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
             "Mie Scattering Intensity (Log10)",
-            ("sans-serif", 30 * scale).into_font(),
+            ("sans-serif", 30 * SCALE).into_font(),
         )
         .build_cartesian_2d(-1.2..1.2, -1.2..1.2)?;
 
@@ -27,7 +27,8 @@ pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn st
 
     let grid_color = RGBColor(211, 211, 211);
 
-    let logs = crate::mie::little_func::arange(r_min.round() as usize, r_max.round() as usize + 1)?;
+    let logs =
+        crate::mie::little_func::arange(r_min.round() as usize, r_max.round() as usize, Some(0.5))?;
     for &log_val in &logs {
         let circle_points: Vec<(f64, f64)> =
             (0..=360).map(|a| polar_to_xy(a as f64, log_val)).collect();
@@ -41,9 +42,9 @@ pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn st
         chart.draw_series(std::iter::once(PathElement::new(circle_points, grid_style)))?;
 
         chart.draw_series(std::iter::once(Text::new(
-            format!("{}", log_val as i32),
+            format!("{:.1}", log_val),
             polar_to_xy(45.0, log_val),
-            ("sans-serif", 15 * scale).into_font(),
+            ("sans-serif", 15 * SCALE).into_font(),
         )))?;
     }
 
@@ -67,7 +68,7 @@ pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn st
         chart.draw_series(std::iter::once(Text::new(
             format!("{}°", angle as i32),
             label_pos,
-            ("sans-serif", 16 * scale).into_font(),
+            ("sans-serif", 16 * SCALE).into_font(),
         )))?;
     }
 
@@ -91,22 +92,22 @@ pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn st
     let line_style = ShapeStyle {
         color: BLACK.to_rgba(),
         filled: false,
-        stroke_width: 2 * scale,
+        stroke_width: 1 * SCALE,
     };
 
     chart
         .draw_series(LineSeries::new(unpolarized_data, line_style.clone()))?
         .label("Unpolarized")
         .legend(move |(x, y)| {
-            PathElement::new(vec![(x, y), (x + 20 * scale as i32, y)], line_style.clone())
+            PathElement::new(vec![(x, y), (x + 20 * SCALE as i32, y)], line_style.clone())
         });
 
     chart
         .configure_series_labels()
         .background_style(WHITE.filled())
         .border_style(&BLACK)
-        .label_font(("sans-serif", 14 * scale).into_font())
-        .margin(20 * scale)
+        .label_font(("sans-serif", 14 * SCALE).into_font())
+        .margin(20 * SCALE)
         .position(SeriesLabelPosition::LowerRight)
         .draw()?;
 

@@ -15,7 +15,7 @@ fn mie_q(rayleigh_thresh: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
     }
 
     let nmax = (2.0 + x + 4.0 * (x.powf(1.0 / 3.0))).round() as usize;
-    let n = little_func::arange(1, nmax + 1)?;
+    let n = little_func::arange(1, nmax + 1, None)?;
 
     let mut n1 = vec![0.0; n.len()];
     let mut n2 = n1.clone();

@@ -6,6 +6,7 @@ mod simulat_const;
 mod vector;
 use std::error::Error;
 use std::io::{self, Write};
+use std::time;
 
 use crate::{
     get_cdf::get_cdf_fn,
@@ -24,6 +25,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut rng = rand::rng();
     let mut theta_log = [0.0; FREQUENCY_IDX as usize];
+
+    let now = time::Instant::now();
 
     for tim in 0..simulat_const::PHOTON_CONST {
         if tim % (simulat_const::PHOTON_CONST / 1000) == 0 {
@@ -59,6 +62,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         }
     }
+    println!();
+    println!("{:?}", now.elapsed());
     println!("{:?}", polyethylene);
     let theta_log: Vec<f64> = theta_log.into();
     let mut r_max = -1e200;
