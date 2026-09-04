@@ -2,11 +2,12 @@ use crate::simulat_const::SCALE;
 use plotters::prelude::*;
 
 pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::error::Error>> {
+    let output: &str = "res/mie_scattering_high_dpi.png";
     let width = 1000 * SCALE;
     let height = 1000 * SCALE;
 
     let root =
-        BitMapBackend::new("mie_scattering_high_dpi.png", (width, height)).into_drawing_area();
+        BitMapBackend::new(output, (width, height)).into_drawing_area();
     root.fill(&WHITE)?;
 
     let root = root.margin(50 * SCALE, 50 * SCALE, 50 * SCALE, 50 * SCALE);
@@ -88,7 +89,6 @@ pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn st
         })
         .collect();
 
-    // 【高解析度調整】7. 主曲線粗細等比例放大 (2 -> 6)
     let line_style = ShapeStyle {
         color: BLACK.to_rgba(),
         filled: false,
@@ -112,6 +112,6 @@ pub(crate) fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn st
         .draw()?;
 
     root.present()?;
-    println!("高解析度圖片已成功生成於 mie_scattering_high_dpi.png！");
+    println!("圖片以儲存在 {}", output);
     Ok(())
 }
