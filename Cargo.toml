@@ -9,6 +9,7 @@ num-traits = "0.2.19"
 plotters = "0.3.7"
 rand = "0.10.2"
 statrs = "0.19.1"
+uom = {version = "0.38.0", features = ["complex64", "si", "std"]}
 
 [profile.release]
 opt-level = 3
