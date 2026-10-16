@@ -1,18 +1,12 @@
 use crate::mie::PI;
 use std::error::Error;
 
-pub(crate) fn find_x(
-    diameter: uom::si::f64::Length,
-    wavelength: uom::si::f64::Length,
-) -> Result<uom::si::f64::Ratio, Box<dyn Error>> {
-    if wavelength < uom::si::f64::Length::new::<uom::si::length::nanometer>(0.0) {
-        return Err("wavelength 不能為負".into());
-    }
+pub(crate) fn find_x(diameter: f64, wavelength: f64) -> Result<f64, Box<dyn Error>> {
     let x = PI * diameter / wavelength;
-    if x < uom::si::f64::Ratio::new::<uom::si::ratio::ratio>(0.0) {
+    if x < 0.0 {
         return Err(From::from("diameter 或 wavelength 不能為負數"));
     }
-    if x == uom::si::f64::Ratio::new::<uom::si::ratio::ratio>(0.0) {
+    if x == 0.0 {
         return Err(From::from("diameter 不能等於 0"));
     }
     return Ok(x);

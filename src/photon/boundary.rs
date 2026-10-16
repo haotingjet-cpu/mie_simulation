@@ -85,10 +85,10 @@ pub(crate) fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>)
     *path = *path * (1.0 - x);
 }
 
-/// ## 得出面的單位向量
-pub(crate) fn get_normal(v: Vec3<f64>) -> Vec3<f64> {
-    let r = (v[0] * v[0] + v[1] * v[1]).sqrt();
-    Vec3::new(-v[0] / r, -v[1] / r, 0.0)
+/// ## 得出單位向量
+pub(crate) fn get_normal(location: Vec3<f64>) -> Vec3<f64> {
+    let r = (location[0] * location[0] + location[1] * location[1]).sqrt();
+    Vec3::new(-location[0] / r, -location[1] / r, 0.0)
 }
 
 /// ## 得出折射後向量

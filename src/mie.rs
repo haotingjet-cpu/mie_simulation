@@ -17,15 +17,15 @@ pub(crate) mod struct_def;
 pub(crate) const AVOGADRO: f64 = 6.02214076e23;
 
 pub(crate) struct MieCoefficients {
-    pub(crate) an: Vec<uom::si::complex64::Ratio>,
-    pub(crate) bn: Vec<uom::si::complex64::Ratio>,
+    pub(crate) an: Vec<Complex<f64>>,
+    pub(crate) bn: Vec<Complex<f64>>,
 }
 
 #[derive(Debug)]
 pub(crate) struct Particle {
-    pub(crate) m: uom::si::complex64::Ratio,
-    pub(crate) diameter: uom::si::f64::Length,
-    pub(crate) molarity: uom::si::f64::AmountOfSubstance,
+    pub(crate) m: Complex<f64>,
+    pub(crate) diameter: f64,
+    pub(crate) molarity: f64,
 }
 
 impl Particle {
