@@ -81,10 +81,10 @@ where
     fn mul(self, rhs: Vec4<T>) -> Self::Output {
         let mat = self.rows;
         Vec4::new(
-            mat[0].dot(&rhs),
-            mat[1].dot(&rhs),
-            mat[2].dot(&rhs),
-            mat[3].dot(&rhs),
+            mat[0].dot(rhs),
+            mat[1].dot(rhs),
+            mat[2].dot(rhs),
+            mat[3].dot(rhs),
         )
     }
 }
@@ -99,28 +99,28 @@ where
         let mat = self.rows;
         Self::new(
             Vec4::new(
-                mat[0].dot(&rhs[0]),
-                mat[0].dot(&rhs[1]),
-                mat[0].dot(&rhs[2]),
-                mat[0].dot(&rhs[3]),
+                mat[0].dot(rhs[0]),
+                mat[0].dot(rhs[1]),
+                mat[0].dot(rhs[2]),
+                mat[0].dot(rhs[3]),
             ),
             Vec4::new(
-                mat[1].dot(&rhs[0]),
-                mat[1].dot(&rhs[1]),
-                mat[1].dot(&rhs[2]),
-                mat[1].dot(&rhs[3]),
+                mat[1].dot(rhs[0]),
+                mat[1].dot(rhs[1]),
+                mat[1].dot(rhs[2]),
+                mat[1].dot(rhs[3]),
             ),
             Vec4::new(
-                mat[2].dot(&rhs[0]),
-                mat[2].dot(&rhs[1]),
-                mat[2].dot(&rhs[2]),
-                mat[2].dot(&rhs[3]),
+                mat[2].dot(rhs[0]),
+                mat[2].dot(rhs[1]),
+                mat[2].dot(rhs[2]),
+                mat[2].dot(rhs[3]),
             ),
             Vec4::new(
-                mat[3].dot(&rhs[0]),
-                mat[3].dot(&rhs[1]),
-                mat[3].dot(&rhs[2]),
-                mat[3].dot(&rhs[3]),
+                mat[3].dot(rhs[0]),
+                mat[3].dot(rhs[1]),
+                mat[3].dot(rhs[2]),
+                mat[3].dot(rhs[3]),
             ),
         )
     }

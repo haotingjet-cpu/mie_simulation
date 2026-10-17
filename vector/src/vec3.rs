@@ -11,7 +11,7 @@ impl<T> Dot<T> for Vec3<T>
 where
     T: Add<Output = T> + Mul<Output = T> + Copy,
 {
-    fn dot(&self, other: &Self) -> T {
+    fn dot(self, other: Self) -> T {
         self.vec[0] * other.vec[0] + self.vec[1] * other.vec[1] + self.vec[2] * other.vec[2]
     }
 }
@@ -146,7 +146,7 @@ impl<T> Norm<T> for Vec3<T>
 where
     T: num_traits::Float + Copy,
 {
-    fn norm(&self) -> T {
+    fn norm(self) -> T {
         (self.vec[0] * self.vec[0] + self.vec[1] * self.vec[1] + self.vec[2] * self.vec[2]).sqrt()
     }
 
@@ -159,7 +159,7 @@ impl<T> Cross<T> for Vec3<T>
 where
     T: Sub<Output = T> + Mul<Output = T> + Copy,
 {
-    fn cross(&self, rhs: &Self) -> Self {
+    fn cross(self, rhs: Self) -> Self {
         Vec3::new(
             self[1] * rhs[2] - self[2] * rhs[1],
             self[2] * rhs[0] - self[0] * rhs[2],

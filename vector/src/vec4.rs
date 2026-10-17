@@ -98,7 +98,7 @@ impl<T> Dot<T> for Vec4<T>
 where
     T: Add<Output = T> + Mul<Output = T> + Copy,
 {
-    fn dot(&self, other: &Self) -> T {
+    fn dot(self, other: Self) -> T {
         self.vec[0] * other.vec[0]
             + self.vec[1] * other.vec[1]
             + self.vec[2] * other.vec[2]
