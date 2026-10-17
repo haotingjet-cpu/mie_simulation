@@ -10,7 +10,7 @@ pub(crate) struct BulkCoefficients {
 }
 
 pub(crate) fn get_sigm_sta() -> Result<(f64, f64, f64), Box<dyn Error>> {
-    let r = POLYETHYLENE.diameter / 2.0;
+    let r = POLYETHYLENE.diameter_nm / 2.0;
     let effi = super::mie_q::auto_mie_q(None)?;
     let area = PI * r * r;
     let sigma_s = area * effi.qsca;
@@ -21,7 +21,7 @@ pub(crate) fn get_sigm_sta() -> Result<(f64, f64, f64), Box<dyn Error>> {
 
 pub(crate) fn find_solution_mu_sta() -> Result<BulkCoefficients, Box<dyn Error>> {
     let sigm_1 = get_sigm_sta()?;
-    let molarity_per_nm3 = POLYETHYLENE.molarity / L_TO_NM3;
+    let molarity_per_nm3 = POLYETHYLENE.molarity_mol_m3 / L_TO_NM3;
     let mu_s = (molarity_per_nm3 * sigm_1.0) * AVOGADRO;
     let mu_t = (molarity_per_nm3 * sigm_1.1) * AVOGADRO;
     let mu_a = (molarity_per_nm3 * sigm_1.2) * AVOGADRO;

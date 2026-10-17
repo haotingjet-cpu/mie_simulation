@@ -8,7 +8,7 @@ use std::error::Error;
 
 fn mie_q(rayleigh_thresh: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
     let rayleigh_thresh = rayleigh_thresh.unwrap_or(0.05);
-    let x = find_x(POLYETHYLENE.diameter, WAVELENGH)?;
+    let x = find_x(POLYETHYLENE.diameter_nm, WAVELENGH_NM)?;
 
     if x <= rayleigh_thresh {
         return rayleigh::rayleigh_mie_q();
@@ -75,8 +75,8 @@ fn mie_q(rayleigh_thresh: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
 pub fn auto_mie_q(crossover: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
     let crossover = crossover.unwrap_or(0.01);
 
-    let wavelengh_eff = WAVELENGH / N_MEDIUM;
-    let x_eff = little_func::find_x(POLYETHYLENE.diameter, wavelengh_eff)?;
+    let wavelengh_eff = WAVELENGH_NM / N_MEDIUM;
+    let x_eff = little_func::find_x(POLYETHYLENE.diameter_nm, wavelengh_eff)?;
 
     if x_eff < crossover {
         return rayleigh::rayleigh_mie_q();

@@ -35,7 +35,7 @@ pub(crate) type DirecVec = Vec3<f64>;
 
 #[repr(align(32))]
 pub(crate) struct Photon {
-    pub(crate) status: StokesVector,
+    pub(crate) stokes_vector: StokesVector,
     pub(crate) direction: DirecVec,
     pub(crate) start_location: DirecVec,
     pub(crate) last_plane_normal_v: DirecVec,
@@ -43,17 +43,19 @@ pub(crate) struct Photon {
 }
 
 impl Photon {
-    pub(crate) fn russion_roulette(&mut self, rng: &mut impl rand::RngExt) -> bool {
+    pub(crate) fn alive_check(&mut self, rng: &mut impl rand::RngExt) -> bool {
+        // 判斷 W 是否低於死亡線
         if self.w <= LIMIT_W_LINE {
+            // 進入輪盤賭
             let zeta: f64 = rng.random();
             if zeta < M.recip() {
-                println!("alive");
                 self.w = self.w * M;
-                return true;
+                true
+            } else {
+                false
             }
-            return false;
+        } else {
+            true
         }
-
-        true
     }
 }

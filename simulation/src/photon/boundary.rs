@@ -2,16 +2,14 @@
 
 use crate::simulat_const::*;
 use rand::RngExt;
-use vector::Dot;
-use vector::Norm;
-use vector::Vec3;
+use vector::{Dot, Norm, Vec3};
 
 /// ## 判斷路徑終點是否仍在容器中
 #[inline(always)]
 pub(crate) fn path_end_is_in_container(start: &Vec3<f64>, path: &Vec3<f64>) -> bool {
     let new = start + path;
 
-    if new[0] * new[0] + new[1] * new[1] <= RADIUS * RADIUS {
+    if new[0] * new[0] + new[1] * new[1] <= RADIUS_NM * RADIUS_NM {
         return true;
     }
     false
@@ -62,7 +60,7 @@ pub(crate) fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>)
     let a = path[0] * path[0] + path[1] * path[1];
 
     let mins_b = -2.0 * (start[0] * path[0] + start[1] * path[1]);
-    let c = start[0] * start[0] + start[1] * start[1] - RADIUS * RADIUS;
+    let c = start[0] * start[0] + start[1] * start[1] - RADIUS_NM * RADIUS_NM;
 
     let d = mins_b * mins_b - 4.0 * a * c;
 
@@ -98,7 +96,7 @@ pub(crate) fn get_refraction_vec(path: Vec3<f64>, normal: Vec3<f64>) -> Vec3<f64
     let r = THETA_C_SIN_REC;
     let r_sq = THETA_C_SIN_2_REC;
 
-    let dot = path.dot(&normal);
+    let dot = path.dot(normal);
 
     let (n, cos_theta) = if dot < 0.0 {
         (normal, -dot)

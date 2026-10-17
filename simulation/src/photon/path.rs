@@ -26,18 +26,18 @@ impl Photon {
                 boundary::caculate_intersection(&mut self.start_location, &mut path);
                 self.start_location = self.start_location * 0.999;
                 let normal = boundary::get_normal(self.start_location);
-                let theta_i_cos = path.dot(&normal).abs() / path.norm();
+                let theta_i_cos = path.dot(normal).abs() / path.norm();
 
                 if boundary::is_reflection(rng, theta_i_cos) {
-                    path = path - normal * 2.0 * (path.dot(&normal));
+                    path = path - normal * 2.0 * (path.dot(normal));
                 } else {
                     let path_2 = boundary::get_refraction_vec(path, normal);
                     let theta = Vec3::new(path_2[0], path_2[1], 0.0)
-                        .dot(&Vec3::new(1.0, 0.0, 0.0))
+                        .dot(Vec3::new(1.0, 0.0, 0.0))
                         .acos();
                     let theta = ((theta / crate::mie::PI * (FREQUENCY as f64)).round() as usize)
                         .min(FREQUENCY_IDX - 1);
-                    theta_log[theta] += photon::get_i(&self.status);
+                    theta_log[theta] += photon::get_i(&self.stokes_vector);
                     return None;
                 }
             }

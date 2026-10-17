@@ -28,11 +28,11 @@ impl super::Photon {
         self.last_plane_normal_v = self.last_plane_normal_v.normalize();
 
         let new_direction = self.direction * cos_t
-            + (self.last_plane_normal_v.cross(&self.direction)) * sin_t * cos_p
+            + (self.last_plane_normal_v.cross(self.direction)) * sin_t * cos_p
             + self.last_plane_normal_v * sin_t * sin_p;
 
         let new_plane_normal = self.last_plane_normal_v * cos_p
-            - (self.last_plane_normal_v.cross(&self.direction)) * sin_p;
+            - (self.last_plane_normal_v.cross(self.direction)) * sin_p;
 
         self.last_plane_normal_v = new_plane_normal.normalize();
         self.direction = new_direction.normalize();
@@ -47,6 +47,6 @@ impl super::Photon {
             Vec4::new(0.0, 0.0, 0.0, 1.0),
         );
 
-        self.status = mul_at_theta * (r_psi * self.status) / mul_at_theta[0][0];
+        self.stokes_vector = mul_at_theta * (r_psi * self.stokes_vector) / mul_at_theta[0][0];
     }
 }

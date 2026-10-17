@@ -25,34 +25,20 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for tim in 0..simulat_const::PHOTON_CONST {
         if tim % (simulat_const::PHOTON_CONST / 1000) == 0 {
-            print!(
-                "\r[{}:{}] | [{}{}] | [{:.1} %]",
-                simulat_const::PHOTON_CONST,
-                tim,
-                "#".repeat(tim * 100 / PHOTON_CONST),
-                ".".repeat(100 - tim * 100 / PHOTON_CONST - 1),
-                tim as f32 * 100.0 / simulat_const::PHOTON_CONST as f32
-            );
-            io::stdout().flush()?;
+            update_progress(tim);
         }
-        let mut photon = photon::Photon {
-            status: Vec4::new(10.0, 0.0, 0.0, 0.0),
-            direction: Vec3::new(1.0, 0.0, 0.0),
-            start_location: Vec3::new(0.0, 0.0, 0.0),
-            last_plane_normal_v: Vec3::new(0.0, 0.0, 1.0),
-            w: 1.0,
-        };
+        let mut photon = new_photon();
 
-        'uni: loop {
+        loop {
             match photon.move_a_path(&mut theta_log, &mut rng, bulkcoef.mu_t) {
                 Some(t) => {
                     t.collision_event(&mut rng, &bulkcoef, &mul_theta, &cdf);
-                    if !(t.russion_roulette(&mut rng)) {
-                        break 'uni;
+                    if !t.alive_check(&mut rng) {
+                        break;
                     };
                 }
                 None => {
-                    break 'uni;
+                    break;
                 }
             }
         }
@@ -74,4 +60,26 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("{}, {}", r_min, r_max);
     draw::draw(theta_log, r_min, r_max)?;
     Ok(())
+}
+
+fn update_progress(tim: usize) {
+    print!(
+        "\r[{}:{}] | [{}{}] | [{:.1} %]",
+        simulat_const::PHOTON_CONST,
+        tim,
+        "#".repeat(tim * 100 / PHOTON_CONST),
+        ".".repeat(100 - tim * 100 / PHOTON_CONST - 1),
+        tim as f32 * 100.0 / simulat_const::PHOTON_CONST as f32
+    );
+    io::stdout().flush().unwrap();
+}
+
+fn new_photon() -> photon::Photon {
+    photon::Photon {
+        stokes_vector: Vec4::new(10.0, 0.0, 0.0, 0.0),
+        direction: Vec3::new(1.0, 0.0, 0.0),
+        start_location: Vec3::new(0.0, 0.0, 0.0),
+        last_plane_normal_v: Vec3::new(0.0, 0.0, 1.0),
+        w: 1.0,
+    }
 }
