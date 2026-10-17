@@ -813,6 +813,7 @@ dependencies = [
  "plotters",
  "rand",
  "statrs",
+ "vector",
 ]
 
 [[package]]
@@ -897,6 +898,9 @@ checksum = "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563"
 [[package]]
 name = "vector"
 version = "0.1.0"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "walkdir"

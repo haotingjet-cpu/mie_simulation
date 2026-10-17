@@ -5,7 +5,8 @@ edition = "2024"
 
 [dependencies]
 num-complex = "0.4.6"
-num-traits = "0.2.19"
+num-traits = {workspace = true}
 plotters = "0.3.7"
 rand = "0.10.2"
 statrs = "0.19.1"
+vector = { path = "../vector"}
