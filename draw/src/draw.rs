@@ -1,8 +1,28 @@
 use plotters::prelude::*;
-use std::error::Error;
 
 const SCALE: u32 = 10;
-pub fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::error::Error>> {
+pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<(), Box<dyn std::error::Error>> {
+    if ballistic.len() != scattered.len() || ballistic.is_empty() {
+        return Err(
+            "ballistic and scattered distributions must have equal, non-zero lengths".into(),
+        );
+    }
+
+    let (mut lo, mut hi) = (f64::INFINITY, f64::NEG_INFINITY);
+    for &x in ballistic.iter().chain(scattered).filter(|&&x| x > 0.0) {
+        let log_x = x.log10();
+        lo = lo.min(log_x);
+        hi = hi.max(log_x);
+    }
+    if !lo.is_finite() || !hi.is_finite() {
+        return Err("cannot draw distributions without positive intensity values".into());
+    }
+    let (mut r_min, mut r_max) = (lo.floor(), hi.ceil());
+    if r_min >= r_max {
+        r_min -= 0.5;
+        r_max += 0.5;
+    }
+
     let output: &str = "picture/mie_scattering_high_dpi.png";
     let width = 1000 * SCALE;
     let height = 1000 * SCALE;
@@ -28,8 +48,9 @@ pub fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::erro
 
     let grid_color = RGBColor(211, 211, 211);
 
-    let logs = arange(r_min.round() as usize, r_max.round() as usize, Some(0.5))?;
-    for &log_val in &logs {
+    let n_steps = ((r_max - r_min) / 0.5).round() as usize;
+    for k in 0..=n_steps {
+        let log_val = r_min + k as f64 * 0.5;
         let circle_points: Vec<(f64, f64)> =
             (0..=360).map(|a| polar_to_xy(a as f64, log_val)).collect();
 
@@ -72,34 +93,38 @@ pub fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::erro
         )))?;
     }
 
-    let lengh = v.len();
-    let unpolarized_data: Vec<(f64, f64)> = v
-        .iter()
-        .enumerate()
-        .map(|(i, &x)| {
-            let angle = (i as f64 / lengh as f64) * 180.0;
-
-            let mut log_val = x.log10();
-            if log_val < r_min || log_val.is_nan() {
-                log_val = r_min;
-            }
-
-            polar_to_xy(angle, log_val)
-        })
-        .collect();
-
-    let line_style = ShapeStyle {
-        color: BLACK.to_rgba(),
-        filled: false,
-        stroke_width: 1 * SCALE,
+    let to_polar_points = |values: &[f64]| {
+        values
+            .iter()
+            .enumerate()
+            .map(|(i, &x)| {
+                let angle = (i as f64 + 0.5) / values.len() as f64 * 180.0;
+                let log_val = if x > 0.0 {
+                    x.log10().clamp(r_min, r_max)
+                } else {
+                    r_min
+                };
+                polar_to_xy(angle, log_val)
+            })
+            .collect::<Vec<_>>()
     };
 
-    chart
-        .draw_series(LineSeries::new(unpolarized_data, line_style.clone()))?
-        .label("Unpolarized")
-        .legend(move |(x, y)| {
-            PathElement::new(vec![(x, y), (x + 20 * SCALE as i32, y)], line_style.clone())
-        });
+    for (label, values, color) in [
+        ("Unscattered", ballistic, BLUE),
+        ("Scattered", scattered, BLACK),
+    ] {
+        let line_style = ShapeStyle {
+            color: color.to_rgba(),
+            filled: false,
+            stroke_width: SCALE,
+        };
+        chart
+            .draw_series(LineSeries::new(to_polar_points(values), line_style.clone()))?
+            .label(label)
+            .legend(move |(x, y)| {
+                PathElement::new(vec![(x, y), (x + 20 * SCALE as i32, y)], line_style.clone())
+            });
+    }
 
     chart
         .configure_series_labels()
@@ -113,32 +138,4 @@ pub fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::erro
     root.present()?;
     println!("圖片以儲存在 {}", output);
     Ok(())
-}
-
-fn arange<T>(start: T, end: T, step: Option<f64>) -> Result<Vec<f64>, Box<dyn Error>>
-where
-    T: TryInto<usize>,
-    <T as TryInto<usize>>::Error: Error + 'static,
-{
-    Ok(arange_iter(start, end, step)?.collect())
-}
-
-fn arange_iter<T>(
-    start: T,
-    end: T,
-    step: Option<f64>,
-) -> Result<impl DoubleEndedIterator<Item = f64> + Clone, Box<dyn Error>>
-where
-    T: TryInto<usize>,
-    <T as TryInto<usize>>::Error: Error + 'static,
-{
-    let step = step.unwrap_or_else(|| 1.0f64);
-    let start_idx: usize = start.try_into()?;
-    let end_idx: usize = end.try_into()?;
-
-    let steps_count = ((end_idx - start_idx) as f64 * step.recip()).round() as usize + 1;
-
-    let iterable = (0..steps_count).map(move |x| (start_idx as f64) + (x as f64) * step);
-
-    Ok(iterable)
 }

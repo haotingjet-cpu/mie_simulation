@@ -3,12 +3,12 @@ use crate::photon::MuellerMatrix;
 use crate::simulat_const::*;
 use rand::RngExt;
 
-pub(crate) fn get_cdf_fn(mulmat: &[MuellerMatrix; FREQUENCY_IDX]) -> [f64; FREQUENCY_IDX] {
-    let mut cdf = [0.0; FREQUENCY_IDX];
+pub(crate) fn get_cdf_fn(mulmat: &[MuellerMatrix]) -> Vec<f64> {
+    let mut cdf = vec![0.0; FREQUENCY_IDX];
     let mut sum = 0.0;
 
     for i in 0..FREQUENCY_IDX {
-        let theta_i = (i as f64 / FREQUENCY_IDX as f64) * PI;
+        let theta_i = (i as f64 + 0.5) * PI / FREQUENCY_IDX as f64;
         let s1 = mulmat[i][0][0] * theta_i.sin();
         sum += s1;
         cdf[i] = sum;
@@ -31,7 +31,7 @@ pub(crate) fn get_cdf_fn(mulmat: &[MuellerMatrix; FREQUENCY_IDX]) -> [f64; FREQU
     cdf
 }
 
-pub(crate) fn cdf_to_theta(rng: &mut impl RngExt, cdf: &[f64; FREQUENCY_IDX]) -> usize {
+pub(crate) fn cdf_to_theta(rng: &mut impl RngExt, cdf: &[f64]) -> usize {
     let zeta: f64 = 1.0 - rng.random::<f64>();
 
     match cdf.binary_search_by(|probe| probe.partial_cmp(&zeta).unwrap()) {

@@ -40,6 +40,7 @@ pub(crate) struct Photon {
     pub(crate) start_location: DirecVec,
     pub(crate) last_plane_normal_v: DirecVec,
     pub(crate) w: f64,
+    pub(crate) scattered: bool,
 }
 
 impl Photon {

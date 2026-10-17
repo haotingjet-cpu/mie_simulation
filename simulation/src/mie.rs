@@ -1,8 +1,9 @@
 use crate::{
     photon::{self, MuellerMatrix},
-    simulat_const::{AVOGADRO, FREQUENCY, WAVELENGH_NM},
+    simulat_const::{FREQUENCY, N_MEDIUM, WAVELENGH_NM},
 };
 use num_complex::Complex;
+use std::error::Error;
 pub(crate) use std::f64::consts::PI;
 
 pub(crate) mod get_mu;
@@ -26,26 +27,33 @@ pub(crate) struct Particle {
     pub(crate) molarity_mol_nm3: f64,
 }
 
+pub(crate) fn mie_parameters(particle: &Particle) -> Result<(Complex<f64>, f64), Box<dyn Error>> {
+    let relative_index = particle.m / N_MEDIUM;
+    let wavelength_medium_nm = WAVELENGH_NM / N_MEDIUM;
+    let size_parameter = little_func::find_x(particle.diameter_nm, wavelength_medium_nm)?;
+    Ok((relative_index, size_parameter))
+}
+
 impl Particle {
     pub(crate) fn get_theta_vs_mueller_matrix(
         &self,
-    ) -> Result<[MuellerMatrix; FREQUENCY as usize], Box<dyn std::error::Error>> {
+    ) -> Result<Vec<MuellerMatrix>, Box<dyn std::error::Error>> {
         if FREQUENCY <= 1 {
             return Err("get_half_round_s1s2: frequency should bigger than 1".into());
         };
-        let x = little_func::find_x(self.diameter_nm, WAVELENGH_NM)?;
+        let (m, x) = mie_parameters(self)?;
 
-        let mie_coef = Some(&mie_ab::auto_mie_ab(self.m, x)?);
+        let mie_coef = Some(&mie_ab::auto_mie_ab(m, x)?);
 
-        let d = PI / (FREQUENCY as f64 - 1.0);
+        let d = PI / FREQUENCY as f64;
 
-        let x: Vec<MuellerMatrix> = (0..FREQUENCY)
-            .map(|i| ((i as f64) * d).cos())
-            .map(|mu| self::mie_s1_s2::mies1s2_one_theta(self.m, x, mu, mie_coef).unwrap())
+        let matrices: Vec<MuellerMatrix> = (0..FREQUENCY)
+            .map(|i| (((i as f64) + 0.5) * d).cos())
+            .map(|mu| self::mie_s1_s2::mies1s2_one_theta(m, x, mu, mie_coef))
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
             .map(|(s1, s2)| photon::get_mueller_matrix_with_s1s2(s1, s2))
-            .take(FREQUENCY as usize)
             .collect();
-        let x: [MuellerMatrix; FREQUENCY as usize] = x.try_into().expect("this won't happened");
-        Ok(x)
+        Ok(matrices)
     }
 }

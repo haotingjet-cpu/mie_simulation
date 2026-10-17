@@ -1,4 +1,4 @@
-use crate::mie::little_func::{self, find_x};
+use crate::mie::little_func;
 use crate::mie::mie_ab;
 use crate::mie::rayleigh;
 use crate::mie::struct_def::{self, Efficiencies};
@@ -6,14 +6,7 @@ use crate::simulat_const::*;
 use num_complex::Complex;
 use std::error::Error;
 
-fn mie_q(rayleigh_thresh: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
-    let rayleigh_thresh = rayleigh_thresh.unwrap_or(0.05);
-    let x = find_x(POLYETHYLENE.diameter_nm, WAVELENGH_NM)?;
-
-    if x <= rayleigh_thresh {
-        return rayleigh::rayleigh_mie_q();
-    }
-
+fn mie_q(m: Complex<f64>, x: f64) -> Result<Efficiencies, Box<dyn Error>> {
     let nmax = (2.0 + x + 4.0 * (x.powf(1.0 / 3.0))).round() as usize;
     let n = little_func::arange(1, nmax + 1, None)?;
 
@@ -32,7 +25,7 @@ fn mie_q(rayleigh_thresh: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
 
     let x2 = x.powi(2);
 
-    let mie_coef = mie_ab::mie_ab(POLYETHYLENE.m, x)?;
+    let mie_coef = mie_ab::mie_ab(m, x)?;
 
     let (an, bn) = (&mie_coef.an, &mie_coef.bn);
 
@@ -73,15 +66,13 @@ fn mie_q(rayleigh_thresh: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
 }
 
 pub fn auto_mie_q(crossover: Option<f64>) -> Result<Efficiencies, Box<dyn Error>> {
-    let crossover = crossover.unwrap_or(0.01);
+    let crossover = crossover.unwrap_or(0.05);
+    let (m, x) = super::mie_parameters(&POLYETHYLENE)?;
 
-    let wavelengh_eff = WAVELENGH_NM / N_MEDIUM;
-    let x_eff = little_func::find_x(POLYETHYLENE.diameter_nm, wavelengh_eff)?;
-
-    if x_eff < crossover {
+    if x < crossover {
         return rayleigh::rayleigh_mie_q();
     } else {
-        return mie_q(None);
+        return mie_q(m, x);
     }
 }
 

@@ -1,14 +1,11 @@
-use crate::mie::little_func::find_x;
+use crate::mie::mie_parameters;
 use crate::mie::struct_def::{self, Efficiencies};
-use crate::simulat_const::*;
+use crate::simulat_const::POLYETHYLENE;
 use num_complex::Complex;
 use std::error::Error;
 
 pub(crate) fn rayleigh_mie_q() -> Result<Efficiencies, Box<dyn Error>> {
-    let m = POLYETHYLENE.m / N_MEDIUM;
-    let wavelength_m = WAVELENGH_NM / N_MEDIUM;
-
-    let x = find_x(POLYETHYLENE.diameter_nm, wavelength_m)?;
+    let (m, x) = mie_parameters(&POLYETHYLENE)?;
 
     let ll = (m.powi(2) - Complex::new(1.0, 0.0)) / (m.powi(2) + Complex::new(2.0, 0.0));
     let ll_abs_sq = ll.norm_sqr();

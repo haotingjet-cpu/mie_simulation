@@ -23,7 +23,7 @@ fn is_tir(theta_i_cos: f64) -> bool {
 }
 
 /// ## 得出 fresnel 反射係數
-/// 如果 is_tir 為true (全反射) 則會直接是 0
+/// 如果 is_tir 為 true (全反射)，反射率為 1
 #[inline]
 fn get_fresnel_r(theta_i_cos: f64) -> f64 {
     if is_tir(theta_i_cos) {
