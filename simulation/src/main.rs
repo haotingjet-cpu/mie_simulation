@@ -72,6 +72,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
     println!("{}, {}", r_min, r_max);
-    draw::draw(theta_log, r_min, r_max, SCALE)?;
+    draw::draw(theta_log, r_min, r_max)?;
     Ok(())
 }

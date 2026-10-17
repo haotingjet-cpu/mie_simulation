@@ -1,25 +1,21 @@
 use plotters::prelude::*;
 use std::error::Error;
 
-pub fn draw(
-    v: Vec<f64>,
-    r_min: f64,
-    r_max: f64,
-    scale: u32,
-) -> Result<(), Box<dyn std::error::Error>> {
+const SCALE: u32 = 10;
+pub fn draw(v: Vec<f64>, r_min: f64, r_max: f64) -> Result<(), Box<dyn std::error::Error>> {
     let output: &str = "picture/mie_scattering_high_dpi.png";
-    let width = 1000 * scale;
-    let height = 1000 * scale;
+    let width = 1000 * SCALE;
+    let height = 1000 * SCALE;
 
     let root = BitMapBackend::new(output, (width, height)).into_drawing_area();
     root.fill(&WHITE)?;
 
-    let root = root.margin(50 * scale, 50 * scale, 50 * scale, 50 * scale);
+    let root = root.margin(50 * SCALE, 50 * SCALE, 50 * SCALE, 50 * SCALE);
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
             "Mie Scattering Intensity (Log10)",
-            ("sans-serif", 30 * scale).into_font(),
+            ("sans-serif", 30 * SCALE).into_font(),
         )
         .build_cartesian_2d(-1.2..1.2, -1.2..1.2)?;
 
@@ -48,7 +44,7 @@ pub fn draw(
         chart.draw_series(std::iter::once(Text::new(
             format!("{:.1}", log_val),
             polar_to_xy(45.0, log_val),
-            ("sans-serif", 15 * scale).into_font(),
+            ("sans-serif", 15 * SCALE).into_font(),
         )))?;
     }
 
@@ -72,7 +68,7 @@ pub fn draw(
         chart.draw_series(std::iter::once(Text::new(
             format!("{}°", angle as i32),
             label_pos,
-            ("sans-serif", 16 * scale).into_font(),
+            ("sans-serif", 16 * SCALE).into_font(),
         )))?;
     }
 
@@ -95,22 +91,22 @@ pub fn draw(
     let line_style = ShapeStyle {
         color: BLACK.to_rgba(),
         filled: false,
-        stroke_width: 1 * scale,
+        stroke_width: 1 * SCALE,
     };
 
     chart
         .draw_series(LineSeries::new(unpolarized_data, line_style.clone()))?
         .label("Unpolarized")
         .legend(move |(x, y)| {
-            PathElement::new(vec![(x, y), (x + 20 * scale as i32, y)], line_style.clone())
+            PathElement::new(vec![(x, y), (x + 20 * SCALE as i32, y)], line_style.clone())
         });
 
     chart
         .configure_series_labels()
         .background_style(WHITE.filled())
         .border_style(&BLACK)
-        .label_font(("sans-serif", 14 * scale).into_font())
-        .margin(20 * scale)
+        .label_font(("sans-serif", 14 * SCALE).into_font())
+        .margin(20 * SCALE)
         .position(SeriesLabelPosition::LowerRight)
         .draw()?;
 
