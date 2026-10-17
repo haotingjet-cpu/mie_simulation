@@ -1,5 +1,5 @@
 use crate::{
-    photon::MuellerMatrix,
+    photon::{self, MuellerMatrix},
     simulat_const::{FREQUENCY, WAVELENGH},
 };
 use num_complex::Complex;
@@ -44,7 +44,7 @@ impl Particle {
         let x: Vec<MuellerMatrix> = (0..FREQUENCY)
             .map(|i| ((i as f64) * d).cos())
             .map(|mu| self::mie_s1_s2::mies1s2_one_theta(self.m, x, mu, mie_coef).unwrap())
-            .map(|(s1, s2)| MuellerMatrix::get_mueller_matrix_with_s1s2(s1, s2))
+            .map(|(s1, s2)| photon::get_mueller_matrix_with_s1s2(s1, s2))
             .take(FREQUENCY as usize)
             .collect();
         let x: [MuellerMatrix; FREQUENCY as usize] = x.try_into().expect("this won't happened");

@@ -1,10 +1,10 @@
 //! 外殼為無限延伸圓柱體
 
 use crate::simulat_const::*;
-use crate::vector::Dot;
-use crate::vector::Norm;
-use crate::vector::Vec3;
 use rand::RngExt;
+use vector::Dot;
+use vector::Norm;
+use vector::Vec3;
 
 /// ## 判斷路徑終點是否仍在容器中
 #[inline(always)]

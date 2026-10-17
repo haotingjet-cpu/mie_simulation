@@ -1,8 +1,8 @@
 use super::boundary::path_end_is_in_container;
-use crate::photon::{Photon, boundary};
+use crate::photon::{self, Photon, boundary};
 use crate::simulat_const::{FREQUENCY, FREQUENCY_IDX};
-use crate::vector::{Dot, Norm, Vec3};
 use rand::RngExt;
+use vector::{Dot, Norm, Vec3};
 
 impl Photon {
     fn get_mean_free_path(&self, rng: &mut impl RngExt, mu_t: f64) -> Vec3<f64> {
@@ -37,7 +37,7 @@ impl Photon {
                         .acos();
                     let theta = ((theta / crate::mie::PI * (FREQUENCY as f64)).round() as usize)
                         .min(FREQUENCY_IDX - 1);
-                    theta_log[theta] += self.status.get_i();
+                    theta_log[theta] += photon::get_i(&self.status);
                     return None;
                 }
             }

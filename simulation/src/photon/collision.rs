@@ -6,7 +6,7 @@ use crate::get_cdf::cdf_to_theta;
 use crate::mie::get_mu::BulkCoefficients;
 use crate::photon::MuellerMatrix;
 use crate::simulat_const::*;
-use crate::vector::{Cross, Norm, Vec4};
+use vector::{Cross, Norm, Vec4};
 
 impl super::Photon {
     pub(crate) fn collision_event(

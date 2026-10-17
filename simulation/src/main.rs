@@ -3,16 +3,12 @@ mod get_cdf;
 mod mie;
 mod photon;
 mod simulat_const;
-mod vector;
 use std::error::Error;
 use std::io::{self, Write};
 use std::time;
+use vector::{Vec3, Vec4};
 
-use crate::{
-    get_cdf::get_cdf_fn,
-    simulat_const::*,
-    vector::{Vec3, Vec4},
-};
+use crate::{get_cdf::get_cdf_fn, simulat_const::*};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let polyethylene = simulat_const::POLYETHYLENE;
