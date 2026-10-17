@@ -6,6 +6,5 @@ edition = "2024"
 [dependencies]
 num-complex = "0.4.6"
 rand = "0.10.2"
-statrs = "0.19.1"
 vector = { path = "../vector"}
 draw = {path = "../draw"}
