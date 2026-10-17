@@ -1,4 +1,3 @@
-mod draw;
 mod get_cdf;
 mod mie;
 mod photon;
@@ -65,7 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut r_max = -1e200;
     let mut r_min = 1e200;
     theta_log.iter().for_each(|&x| {
-        let x = x.log10();
+        let x = x.log10().max(0.0);
         if x < r_min {
             r_min = x.round()
         } else if x > r_max {
@@ -73,6 +72,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     });
     println!("{}, {}", r_min, r_max);
-    draw::draw(theta_log, r_min, r_max)?;
+    draw::draw(theta_log, r_min, r_max, SCALE)?;
     Ok(())
 }

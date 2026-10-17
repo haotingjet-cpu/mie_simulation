@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["simulation", "vector"]
+members = ["draw","simulation", "vector"]
 
 [profile.release]
 opt-level = 3
