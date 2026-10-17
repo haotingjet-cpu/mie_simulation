@@ -15,7 +15,7 @@ pub(crate) const WAVELENGH: f64 = 632.8;
 pub(crate) const LIMIT_W_LINE: f64 = 1e-3;
 pub(crate) const M: f64 = 6.0;
 
-pub(crate) const PHOTON_CONST: usize = 5000000000;
+pub(crate) const PHOTON_CONST: usize = 50000000;
 pub(crate) const FREQUENCY: i64 = 2160;
 pub(crate) const SCALE: u32 = 10;
 

@@ -7,7 +7,7 @@ pub fn draw(
     r_max: f64,
     scale: u32,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let output: &str = "res/mie_scattering_high_dpi.png";
+    let output: &str = "picture/mie_scattering_high_dpi.png";
     let width = 1000 * scale;
     let height = 1000 * scale;
 
