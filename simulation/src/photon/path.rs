@@ -30,10 +30,15 @@ impl Photon {
 
                 if boundary::is_reflection(rng, theta_i_cos) {
                     path = path - normal * 2.0 * (path.dot(normal));
+                    self.direction = path.normalize();
+
+                    let n = self.last_plane_normal_v;
+                    self.last_plane_normal_v =
+                        (n - self.direction * n.dot(self.direction)).normalize();
                 } else {
                     let path_2 = boundary::get_refraction_vec(path, normal);
                     let theta = Vec3::new(path_2[0], path_2[1], 0.0)
-                        .dot(Vec3::new(1.0, 0.0, 0.0))
+                        .dot(Vec3::new(1.0, path_2[1], 0.0))
                         .acos();
                     let theta = ((theta / crate::mie::PI * (FREQUENCY as f64)).round() as usize)
                         .min(FREQUENCY_IDX - 1);

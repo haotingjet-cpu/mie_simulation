@@ -1,6 +1,6 @@
 use crate::{
     photon::{self, MuellerMatrix},
-    simulat_const::{FREQUENCY, WAVELENGH_NM},
+    simulat_const::{AVOGADRO, FREQUENCY, WAVELENGH_NM},
 };
 use num_complex::Complex;
 pub(crate) use std::f64::consts::PI;
@@ -14,8 +14,6 @@ pub(crate) mod mie_s1_s2;
 pub(crate) mod rayleigh;
 pub(crate) mod struct_def;
 
-pub(crate) const AVOGADRO: f64 = 6.02214076e23;
-
 pub(crate) struct MieCoefficients {
     pub(crate) an: Vec<Complex<f64>>,
     pub(crate) bn: Vec<Complex<f64>>,
@@ -25,7 +23,7 @@ pub(crate) struct MieCoefficients {
 pub(crate) struct Particle {
     pub(crate) m: Complex<f64>,
     pub(crate) diameter_nm: f64,
-    pub(crate) molarity_mol_m3: f64,
+    pub(crate) molarity_mol_nm3: f64,
 }
 
 impl Particle {
