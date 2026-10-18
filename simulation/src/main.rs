@@ -71,14 +71,15 @@ fn update_progress(tim: usize, started_at: time::Instant) -> io::Result<()> {
         .map(format_duration)
         .unwrap_or_else(|| "estimating".to_owned());
     print!(
-        "\r[{}:{}] | [{}{}] | [{:.1} %] | ETA {}",
+        "\r[{}:{}] | [{}{}] | [{:.1} %] | [{}]",
         simulat_const::PHOTON_CONST,
         tim,
-        "#".repeat(tim * 100 / PHOTON_CONST),
-        ".".repeat(100 - tim * 100 / PHOTON_CONST - 1),
+        "#".repeat(tim * 50 / PHOTON_CONST),
+        ".".repeat(50 - tim * 50 / PHOTON_CONST - 1),
         tim as f32 * 100.0 / simulat_const::PHOTON_CONST as f32,
         eta,
     );
+
     io::stdout().flush()
 }
 
