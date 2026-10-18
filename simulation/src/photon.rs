@@ -1,8 +1,6 @@
 pub(crate) mod boundary;
 pub(crate) mod collision;
 pub(crate) mod path;
-use std::error::Error;
-
 use vector::{Matrix4, Vec3, Vec4};
 
 use crate::{mie::get_mu::BulkCoefficients, simulat_const::*};
@@ -67,13 +65,13 @@ impl Photon {
         rng: &mut impl rand::RngExt,
         theta_log: &mut [[f64; FREQUENCY_IDX]; 2],
         bulkcoef: &BulkCoefficients,
-        mul_theta: &Vec<MuellerMatrix>,
-        cdf: &Vec<f64>,
-    ) -> Result<(), Box<dyn Error>> {
+        mul_theta: &[MuellerMatrix],
+        cdf: &[f64],
+    ) -> Result<(), &'static str> {
         loop {
             match self.move_a_path(theta_log, rng, bulkcoef.mu_t) {
                 Some(t) => {
-                    t.collision_event(rng, &bulkcoef, &mul_theta, cdf)?;
+                    t.collision_event(rng, bulkcoef, mul_theta, cdf)?;
                     if !t.alive_check(rng) {
                         break;
                     };

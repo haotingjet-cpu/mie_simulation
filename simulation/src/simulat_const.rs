@@ -6,7 +6,7 @@ use vector::{Vec3, Vec4};
 pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
     m: Complex::new(1.4998, 0.0),
     diameter_nm: 1200.0,
-    molarity_mol_nm3: 1.6605e-36, // mol/nm^3
+    molarity_mol_nm3: 1.6605e-41, // mol/nm^3
 };
 
 pub(crate) const PHOTON: photon::Photon = photon::Photon {
@@ -28,6 +28,7 @@ pub(crate) const M: f64 = 6.0;
 
 pub(crate) const PHOTON_CONST: usize = 500000000000;
 pub(crate) const FREQUENCY: i64 = 180 * 5;
+pub(crate) const CUT: usize = 100000;
 
 pub(crate) const AVOGADRO: f64 = 6.02214076e23;
 // ===== 加速計算用參數，由推倒來不可改 ===================
@@ -39,11 +40,19 @@ pub(crate) const FREQUENCY_IDX: usize = FREQUENCY as usize;
 
 // ===== 編譯期參數特性確保 =============================
 const _: () = {
+    if PHOTON_CONST == 0 {
+        panic!()
+    }
+
     if FREQUENCY % 180 != 0 {
         panic!();
     }
 
     if M.round() != M {
+        panic!()
+    }
+
+    if CUT == 0 {
         panic!()
     }
 };

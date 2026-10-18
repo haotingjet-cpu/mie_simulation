@@ -4,10 +4,13 @@ mod photon;
 mod simulat_const;
 use std::error::Error;
 use std::io::{self, Write};
-use std::time;
-use vector::{Vec3, Vec4};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::{thread, time};
 
 use crate::{get_cdf::get_cdf_fn, simulat_const::*};
+
+const WORKER_COUNT: usize = 16;
+type Histogram = [[f64; FREQUENCY_IDX]; 2];
 
 fn main() -> Result<(), Box<dyn Error>> {
     let polyethylene = simulat_const::POLYETHYLENE;
@@ -18,18 +21,85 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let cdf = get_cdf_fn(&mul_theta);
 
-    let mut rng = rand::rng();
-    let mut theta_log = [[0.0; FREQUENCY_IDX]; 2];
-
     let now = time::Instant::now();
+    let completed = AtomicUsize::new(0);
+    let next_chunk = AtomicUsize::new(0);
+    let worker_failed = AtomicBool::new(false);
+    let theta_log = thread::scope(|scope| -> Result<Histogram, Box<dyn Error>> {
+        let mut handles = Vec::with_capacity(WORKER_COUNT);
 
-    for tim in 0..simulat_const::PHOTON_CONST {
-        if tim % (simulat_const::PHOTON_CONST / 10000) == 0 {
-            update_progress(tim, now)?;
+        for _ in 0..WORKER_COUNT {
+            let completed = &completed;
+            let next_chunk = &next_chunk;
+            let worker_failed = &worker_failed;
+            let bulkcoef = &bulkcoef;
+            let mul_theta = &mul_theta;
+            let cdf = &cdf;
+            handles.push(scope.spawn(move || -> Result<Histogram, &'static str> {
+                let mut rng = rand::rng();
+                let mut theta_log = [[0.0; FREQUENCY_IDX]; 2];
+
+                loop {
+                    if worker_failed.load(Ordering::Relaxed) {
+                        break;
+                    }
+                    let chunk_id = next_chunk.fetch_add(1, Ordering::Relaxed);
+                    let Some(photons_in_chunk) = photons_in_chunk(chunk_id, PHOTON_CONST, CUT)
+                    else {
+                        break;
+                    };
+                    for _ in 0..photons_in_chunk {
+                        if let Err(error) =
+                            PHOTON.simulate(&mut rng, &mut theta_log, bulkcoef, mul_theta, cdf)
+                        {
+                            worker_failed.store(true, Ordering::Relaxed);
+                            return Err(error);
+                        }
+                    }
+                    completed.fetch_add(photons_in_chunk, Ordering::Relaxed);
+                }
+                Ok(theta_log)
+            }));
         }
 
-        PHOTON.simulate(&mut rng, &mut theta_log, &bulkcoef, &mul_theta, &cdf)?;
-    }
+        let progress_interval = PHOTON_CONST.div_ceil(1000).max(1);
+        let mut last_progress = 0;
+        loop {
+            let current = completed.load(Ordering::Relaxed).min(PHOTON_CONST);
+            if current.saturating_sub(last_progress) >= progress_interval || current == PHOTON_CONST
+            {
+                update_progress(current, now)?;
+                last_progress = current;
+            }
+            if current == PHOTON_CONST
+                || worker_failed.load(Ordering::Relaxed)
+                || handles.iter().all(|handle| handle.is_finished())
+            {
+                break;
+            }
+            thread::sleep(time::Duration::from_millis(1));
+        }
+
+        let mut theta_log = [[0.0; FREQUENCY_IDX]; 2];
+        let mut worker_error = None;
+        for handle in handles {
+            match handle.join() {
+                Ok(Ok(worker_log)) => add(&mut theta_log, worker_log),
+                Ok(Err(error)) => {
+                    worker_error.get_or_insert_with(|| io::Error::other(error));
+                }
+                Err(_) => {
+                    worker_error
+                        .get_or_insert_with(|| io::Error::other("simulation worker panicked"));
+                }
+            }
+        }
+        if let Some(error) = worker_error {
+            return Err(error.into());
+        }
+        Ok(theta_log)
+    })?;
+
     println!();
     println!("{:?}", now.elapsed());
     println!("{:?}", polyethylene);
@@ -37,6 +107,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     let scattered = to_intensity_per_sr(&theta_log[1], PHOTON_CONST);
     draw::draw(&ballistic, &scattered)?;
     Ok(())
+}
+
+fn add(final_log: &mut Histogram, log: Histogram) {
+    for (final_category, log_category) in final_log.iter_mut().zip(log) {
+        for (final_bin, log_bin) in final_category.iter_mut().zip(log_category) {
+            *final_bin += log_bin;
+        }
+    }
+}
+
+fn photons_in_chunk(chunk_id: usize, total: usize, chunk_size: usize) -> Option<usize> {
+    if chunk_size == 0 {
+        return None;
+    }
+    let start = chunk_id.checked_mul(chunk_size)?;
+    (start < total).then(|| chunk_size.min(total - start))
 }
 
 fn to_intensity_per_sr(counts: &[f64], n_photons: usize) -> Vec<f64> {
@@ -57,12 +143,13 @@ fn update_progress(tim: usize, started_at: time::Instant) -> io::Result<()> {
     let eta = estimate_remaining_time(tim, PHOTON_CONST, elapsed)
         .map(format_duration)
         .unwrap_or_else(|| "estimating".to_owned());
+    let filled = (tim.saturating_mul(50) / PHOTON_CONST).min(50);
     print!(
         "\r[{}:{}] | [{}{}] | [{:.1} %] | [{}]",
         simulat_const::PHOTON_CONST,
         tim,
-        "#".repeat(tim * 50 / PHOTON_CONST),
-        ".".repeat(50 - tim * 50 / PHOTON_CONST - 1),
+        "#".repeat(filled),
+        ".".repeat(50 - filled),
         tim as f32 * 100.0 / simulat_const::PHOTON_CONST as f32,
         eta,
     );
@@ -96,7 +183,10 @@ fn format_duration(duration: time::Duration) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{estimate_remaining_time, format_duration, to_intensity_per_sr};
+    use super::{
+        Histogram, add, estimate_remaining_time, format_duration, photons_in_chunk,
+        to_intensity_per_sr,
+    };
     use std::f64::consts::PI;
     use std::time::Duration;
 
@@ -137,5 +227,33 @@ mod tests {
     #[test]
     fn duration_is_formatted_as_hours_minutes_seconds() {
         assert_eq!(format_duration(Duration::from_secs(3661)), "01:01:01");
+    }
+
+    #[test]
+    fn histogram_merge_adds_every_category_and_bin() {
+        let mut total = [[0.0; super::FREQUENCY_IDX]; 2];
+        let mut worker = [[0.0; super::FREQUENCY_IDX]; 2];
+        worker[0][0] = 1.0;
+        worker[0][super::FREQUENCY_IDX - 1] = 2.0;
+        worker[1][0] = 3.0;
+        worker[1][super::FREQUENCY_IDX - 1] = 4.0;
+
+        add(&mut total, worker);
+
+        assert_eq!(total[0][0], 1.0);
+        assert_eq!(total[0][super::FREQUENCY_IDX - 1], 2.0);
+        assert_eq!(total[1][0], 3.0);
+        assert_eq!(total[1][super::FREQUENCY_IDX - 1], 4.0);
+        let _: Histogram = total;
+    }
+
+    #[test]
+    fn chunk_sizing_covers_exact_and_partial_final_chunks() {
+        let chunk_sizes: Vec<_> = (0..4)
+            .filter_map(|id| photons_in_chunk(id, 23, 10))
+            .collect();
+        assert_eq!(chunk_sizes, [10, 10, 3]);
+        assert_eq!(chunk_sizes.iter().sum::<usize>(), 23);
+        assert_eq!(photons_in_chunk(0, 10, 0), None);
     }
 }

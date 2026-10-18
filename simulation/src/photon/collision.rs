@@ -6,7 +6,6 @@ use crate::get_cdf::cdf_to_theta;
 use crate::mie::get_mu::BulkCoefficients;
 use crate::photon::MuellerMatrix;
 use crate::simulat_const::*;
-use std::error::Error;
 use vector::{Cross, Norm, Vec4};
 
 impl super::Photon {
@@ -16,7 +15,7 @@ impl super::Photon {
         bul: &BulkCoefficients,
         mul_theta: &[MuellerMatrix],
         cdf: &[f64],
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), &'static str> {
         let idx = cdf_to_theta(rng, cdf);
         let theta = (idx as f64 + 0.5) / FREQUENCY as f64 * PI;
         let mul_at_theta = mul_theta[idx];
@@ -50,7 +49,7 @@ impl super::Photon {
         let scattered_stokes = mul_at_theta * (r_psi * self.stokes_vector);
         let intensity_ratio = scattered_stokes[0] / (mul_at_theta[0][0] * self.stokes_vector[0]);
         if !intensity_ratio.is_finite() || intensity_ratio <= 0.0 {
-            return Err("invalid intensity ratio during polarized scattering".into());
+            return Err("invalid intensity ratio during polarized scattering");
         }
         self.w *= bul.mu_s / bul.mu_t * intensity_ratio;
         self.stokes_vector = scattered_stokes / scattered_stokes[0];

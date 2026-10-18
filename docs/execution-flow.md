@@ -102,7 +102,13 @@ Mueller 矩陣與更新 photon 方向。
 
 ## 4. Photon 初始狀態與主迴圈
 
-主迴圈執行 `PHOTON_CONST` 次，每次建立一個新的 photon：
+主迴圈以 8 個 scoped worker 平行執行，工作以 `CUT` 個 photon 為一個 chunk。
+worker 透過原子計數器動態領取下一個 chunk，減少固定分配下因各 photon 路徑長度
+不同而造成的負載不均。每個 worker 持有自己的 RNG 與局部直方圖，chunk 完成後
+才更新共享完成數；模擬資料及直方圖不需要跨執行緒加鎖。主執行緒週期性讀取
+完成數以顯示進度，最後 join 所有 worker 並合併各自直方圖。
+
+每個 photon 初始狀態如下：
 
 - 位置 `start_location = (0, 0, 0)`。
 - 傳播方向 `direction = (1, 0, 0)`。
