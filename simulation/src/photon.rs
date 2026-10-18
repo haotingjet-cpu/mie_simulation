@@ -1,9 +1,11 @@
 pub(crate) mod boundary;
 pub(crate) mod collision;
 pub(crate) mod path;
+use std::error::Error;
+
 use vector::{Matrix4, Vec3, Vec4};
 
-use crate::simulat_const::{LIMIT_W_LINE, M};
+use crate::{mie::get_mu::BulkCoefficients, simulat_const::*};
 use num_complex::Complex;
 /// # StokesVector
 /// * i: f64 -> Total intensity
@@ -58,5 +60,29 @@ impl Photon {
         } else {
             true
         }
+    }
+
+    pub(crate) fn simulate(
+        mut self,
+        rng: &mut impl rand::RngExt,
+        theta_log: &mut [[f64; FREQUENCY_IDX]; 2],
+        bulkcoef: &BulkCoefficients,
+        mul_theta: &Vec<MuellerMatrix>,
+        cdf: &Vec<f64>,
+    ) -> Result<(), Box<dyn Error>> {
+        loop {
+            match self.move_a_path(theta_log, rng, bulkcoef.mu_t) {
+                Some(t) => {
+                    t.collision_event(rng, &bulkcoef, &mul_theta, cdf)?;
+                    if !t.alive_check(rng) {
+                        break;
+                    };
+                }
+                None => {
+                    break;
+                }
+            }
+        }
+        Ok(())
     }
 }

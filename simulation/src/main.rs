@@ -27,21 +27,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         if tim % (simulat_const::PHOTON_CONST / 10000) == 0 {
             update_progress(tim, now)?;
         }
-        let mut photon = new_photon();
 
-        loop {
-            match photon.move_a_path(&mut theta_log, &mut rng, bulkcoef.mu_t) {
-                Some(t) => {
-                    t.collision_event(&mut rng, &bulkcoef, &mul_theta, &cdf)?;
-                    if !t.alive_check(&mut rng) {
-                        break;
-                    };
-                }
-                None => {
-                    break;
-                }
-            }
-        }
+        new_photon().simulate(&mut rng, &mut theta_log, &bulkcoef, &mul_theta, &cdf)?;
     }
     println!();
     println!("{:?}", now.elapsed());
