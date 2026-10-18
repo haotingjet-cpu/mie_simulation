@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             update_progress(tim, now)?;
         }
 
-        new_photon().simulate(&mut rng, &mut theta_log, &bulkcoef, &mul_theta, &cdf)?;
+        PHOTON.simulate(&mut rng, &mut theta_log, &bulkcoef, &mul_theta, &cdf)?;
     }
     println!();
     println!("{:?}", now.elapsed());
@@ -92,17 +92,6 @@ fn format_duration(duration: time::Duration) -> String {
     let minutes = (total_seconds % 3600) / 60;
     let seconds = total_seconds % 60;
     format!("{hours:02}:{minutes:02}:{seconds:02}")
-}
-
-fn new_photon() -> photon::Photon {
-    photon::Photon {
-        stokes_vector: Vec4::new(1.0, 0.0, 0.0, 0.0),
-        direction: Vec3::new(1.0, 0.0, 0.0),
-        start_location: Vec3::new(0.0, 0.0, 0.0),
-        last_plane_normal_v: Vec3::new(0.0, 0.0, 1.0),
-        w: 1.0,
-        scattered: false,
-    }
 }
 
 #[cfg(test)]

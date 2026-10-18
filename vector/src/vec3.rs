@@ -124,7 +124,7 @@ where
 }
 
 impl<T> Vec3<T> {
-    pub fn new(i0: T, i1: T, i2: T) -> Self {
+    pub const fn new(i0: T, i1: T, i2: T) -> Self {
         Self { vec: [i0, i1, i2] }
     }
 }

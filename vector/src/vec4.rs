@@ -15,7 +15,7 @@ where
         self.vec
     }
 
-    pub fn new(i0: T, i1: T, i2: T, i3: T) -> Self {
+    pub const fn new(i0: T, i1: T, i2: T, i3: T) -> Self {
         Self {
             vec: [i0, i1, i2, i3],
         }

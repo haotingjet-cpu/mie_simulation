@@ -1,5 +1,6 @@
-use crate::mie;
+use crate::{mie, photon};
 use num_complex::Complex;
+use vector::{Vec3, Vec4};
 
 // ===== 模擬可修改填參數 ===============================
 pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
@@ -7,6 +8,16 @@ pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
     diameter_nm: 1200.0,
     molarity_mol_nm3: 1.6605e-36, // mol/nm^3
 };
+
+pub(crate) const PHOTON: photon::Photon = photon::Photon {
+    stokes_vector: Vec4::new(1.0, 0.0, 0.0, 0.0),
+    direction: Vec3::new(1.0, 0.0, 0.0),
+    start_location: Vec3::new(0.0, 0.0, 0.0),
+    last_plane_normal_v: Vec3::new(0.0, 0.0, 1.0),
+    w: 1.0,
+    scattered: false,
+};
+
 pub(crate) const RADIUS_NM: f64 = 5e6;
 pub(crate) const N_MEDIUM: f64 = 1.332;
 pub(crate) const N_BOUNDARY: f64 = 1.45;
