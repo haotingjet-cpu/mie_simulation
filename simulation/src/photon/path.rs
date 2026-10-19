@@ -1,5 +1,5 @@
-use super::boundary::path_end_is_in_container;
-use crate::photon::{self, Photon, boundary};
+use super::boundary::{Container, Cylinder};
+use crate::photon::{self, Photon};
 use crate::simulat_const::{FREQUENCY, FREQUENCY_IDX, RADIUS_NM};
 use rand::RngExt;
 use std::f64::consts::PI;
@@ -20,17 +20,17 @@ impl Photon {
     ) -> Option<&mut Self> {
         let mut path = self.get_mean_free_path(rng, mu_t);
         loop {
-            if path_end_is_in_container(&self.start_location, &path) {
+            if Cylinder::path_end_is_in_container(&self.start_location, &path) {
                 self.start_location = self.start_location + path;
                 return Some(self);
             } else {
-                boundary::caculate_intersection(&mut self.start_location, &mut path);
-                let normal = boundary::get_normal(self.start_location);
+                Cylinder::caculate_intersection(&mut self.start_location, &mut path);
+                let normal = Cylinder::get_normal(self.start_location);
                 let incoming_direction = self.direction.normalize();
                 let theta_i_cos = incoming_direction.dot(normal).abs().clamp(0.0, 1.0);
                 self.start_location = self.start_location + normal * (RADIUS_NM * 1e-9);
 
-                if boundary::is_reflection(rng, theta_i_cos) {
+                if Cylinder::is_reflection(rng, theta_i_cos) {
                     path = path - normal * 2.0 * (path.dot(normal));
                     self.direction =
                         incoming_direction - normal * 2.0 * incoming_direction.dot(normal);
@@ -39,7 +39,7 @@ impl Photon {
                     self.last_plane_normal_v =
                         (n - self.direction * n.dot(self.direction)).normalize();
                 } else {
-                    let path_2 = boundary::get_refraction_vec(incoming_direction, normal);
+                    let path_2 = Cylinder::get_refraction_vec(incoming_direction, normal);
                     let theta = path_2[0].clamp(-1.0, 1.0).acos();
                     let theta =
                         ((theta / PI * FREQUENCY as f64).floor() as usize).min(FREQUENCY_IDX - 1);
