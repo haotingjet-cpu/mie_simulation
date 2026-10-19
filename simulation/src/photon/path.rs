@@ -1,6 +1,6 @@
-use super::boundary::{Container, Cylinder};
+use super::boundary::{Container, Cuboid};
 use crate::photon::Photon;
-use crate::simulat_const::{FREQUENCY, FREQUENCY_IDX, RADIUS_NM};
+use crate::simulat_const::{FREQUENCY_IDX, RADIUS_NM};
 use rand::RngExt;
 use vector::{Dot, Norm, Vec3};
 
@@ -19,17 +19,17 @@ impl Photon {
     ) -> Option<&mut Self> {
         let mut path = self.get_mean_free_path(rng, mu_t);
         loop {
-            if Cylinder::path_end_is_in_container(&self.start_location, &path) {
+            if Cuboid::path_end_is_in_container(&self.start_location, &path) {
                 self.start_location = self.start_location + path;
                 return Some(self);
             } else {
-                Cylinder::caculate_intersection(&mut self.start_location, &mut path);
-                let normal = Cylinder::get_normal(self.start_location);
+                Cuboid::caculate_intersection(&mut self.start_location, &mut path);
+                let normal = Cuboid::get_normal(self.start_location);
                 let incoming_direction = self.direction.normalize();
                 let theta_i_cos = incoming_direction.dot(normal).abs().clamp(0.0, 1.0);
                 self.start_location = self.start_location + normal * (RADIUS_NM * 1e-9);
 
-                if Cylinder::is_reflection(rng, theta_i_cos) {
+                if Cuboid::is_reflection(rng, theta_i_cos) {
                     path = path - normal * 2.0 * (path.dot(normal));
                     self.direction =
                         incoming_direction - normal * 2.0 * incoming_direction.dot(normal);
@@ -38,8 +38,8 @@ impl Photon {
                     self.last_plane_normal_v =
                         (n - self.direction * n.dot(self.direction)).normalize();
                 } else {
-                    let path_2 = Cylinder::get_refraction_vec(incoming_direction, normal);
-                    Cylinder::log(theta_log, path_2, self, None);
+                    let path_2 = Cuboid::get_refraction_vec(incoming_direction, normal);
+                    Cuboid::log(theta_log, path_2, self);
                     return None;
                 }
             }

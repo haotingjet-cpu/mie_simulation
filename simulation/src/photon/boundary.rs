@@ -29,15 +29,11 @@ pub(crate) trait Container {
 
     fn get_refraction_vec(path: Vec3<f64>, normal: Vec3<f64>) -> Vec3<f64>;
 
-    fn log(
-        theta_log: &mut [[f64; FREQUENCY_IDX]; 2],
-        v: Vec3<f64>,
-        photon: &mut Photon,
-        _location: Option<Vec3<f64>>,
-    );
+    fn log(theta_log: &mut [[f64; FREQUENCY_IDX]; 2], v: Vec3<f64>, photon: &mut Photon);
 }
 
 /// # 外殼為無限延伸圓柱體
+#[allow(dead_code)]
 pub(crate) struct Cylinder;
 
 impl Container for Cylinder {
@@ -139,12 +135,7 @@ impl Container for Cylinder {
         path_2
     }
 
-    fn log(
-        theta_log: &mut [[f64; FREQUENCY_IDX]; 2],
-        v: Vec3<f64>,
-        photon: &mut Photon,
-        _location: Option<Vec3<f64>>,
-    ) {
+    fn log(theta_log: &mut [[f64; FREQUENCY_IDX]; 2], v: Vec3<f64>, photon: &mut Photon) {
         let theta = v[0].clamp(-1.0, 1.0).acos();
         let theta = ((theta / PI * FREQUENCY as f64).floor() as usize).min(FREQUENCY_IDX - 1);
         theta_log[photon.scattered as usize][theta] +=
@@ -156,3 +147,137 @@ impl Container for Cylinder {
 /// 長和寬皆為為 ` 2.0 * crate::simulat_const::RADIUS_NM`
 /// 高度無限長
 pub(crate) struct Cuboid;
+
+impl Container for Cuboid {
+    #[inline(always)]
+    fn path_end_is_in_container(start: &Vec3<f64>, path: &Vec3<f64>) -> bool {
+        let end = start + path;
+        end[0].abs() <= RADIUS_NM && end[1].abs() <= RADIUS_NM
+    }
+
+    #[inline]
+    fn is_tir(theta_i_cos: f64) -> bool {
+        let sin_i_2 = 1.0 - theta_i_cos * theta_i_cos;
+        sin_i_2 > THETA_C_SIN_2
+    }
+
+    #[inline]
+    fn get_fresnel_r(theta_i_cos: f64) -> f64 {
+        if Self::is_tir(theta_i_cos) {
+            return 1.0;
+        }
+
+        let theta_t_cos = (1.0 - THETA_C_SIN_2_REC * (1.0 - theta_i_cos * theta_i_cos)).sqrt();
+        let rs = ((theta_i_cos - THETA_C_SIN * theta_t_cos)
+            / (theta_i_cos + THETA_C_SIN * theta_t_cos))
+            .powi(2);
+        let rp = ((THETA_C_SIN * theta_i_cos - theta_t_cos)
+            / (THETA_C_SIN * theta_i_cos + theta_t_cos))
+            .powi(2);
+        (rs + rp) * 0.5
+    }
+
+    #[inline]
+    fn is_reflection(rng: &mut impl RngExt, theta_i_cos: f64) -> bool {
+        rng.random::<f64>() < Self::get_fresnel_r(theta_i_cos)
+    }
+
+    fn caculate_intersection(start: &mut Vec3<f64>, path: &mut Vec3<f64>) {
+        let mut intersection_t = f64::INFINITY;
+
+        for axis in 0..2 {
+            if path[axis] == 0.0 {
+                continue;
+            }
+
+            let boundary = if path[axis] > 0.0 {
+                RADIUS_NM
+            } else {
+                -RADIUS_NM
+            };
+            let t = (boundary - start[axis]) / path[axis];
+            if (0.0..=1.0).contains(&t) {
+                intersection_t = intersection_t.min(t);
+            }
+        }
+
+        let t = intersection_t.clamp(0.0, 1.0);
+        *start = *start + *path * t;
+        *path = *path * (1.0 - t);
+    }
+
+    fn get_normal(location: Vec3<f64>) -> Vec3<f64> {
+        let distance_to_x_face = (RADIUS_NM - location[0].abs()).abs();
+        let distance_to_y_face = (RADIUS_NM - location[1].abs()).abs();
+
+        if distance_to_x_face <= distance_to_y_face {
+            Vec3::new(-location[0].signum(), 0.0, 0.0)
+        } else {
+            Vec3::new(0.0, -location[1].signum(), 0.0)
+        }
+    }
+
+    fn get_refraction_vec(path: Vec3<f64>, normal: Vec3<f64>) -> Vec3<f64> {
+        let path = path / path.norm();
+        let ratio = THETA_C_SIN_REC;
+        let ratio_sq = THETA_C_SIN_2_REC;
+        let dot = path.dot(normal);
+
+        let (normal_toward_incident, cos_theta_i) = if dot < 0.0 {
+            (normal, -dot)
+        } else {
+            (normal * -1.0, dot)
+        };
+
+        let cos_theta_t_sq = 1.0 - ratio_sq * (1.0 - cos_theta_i * cos_theta_i);
+        path * ratio + normal_toward_incident * (ratio * cos_theta_i - cos_theta_t_sq.sqrt())
+    }
+
+    fn log(theta_log: &mut [[f64; FREQUENCY_IDX]; 2], direction: Vec3<f64>, photon: &mut Photon) {
+        let theta = direction[0].clamp(-1.0, 1.0).acos();
+        let bin = ((theta / PI * FREQUENCY as f64).floor() as usize).min(FREQUENCY_IDX - 1);
+        theta_log[photon.scattered as usize][bin] +=
+            photon.w * photon::get_i(&photon.stokes_vector);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Container, Cuboid};
+    use crate::simulat_const::RADIUS_NM;
+    use vector::{Norm, Vec3};
+
+    #[test]
+    fn cuboid_contains_points_inside_xy_bounds_and_is_unbounded_in_z() {
+        assert!(Cuboid::path_end_is_in_container(
+            &Vec3::new(0.0, 0.0, 10.0 * RADIUS_NM),
+            &Vec3::new(RADIUS_NM, -RADIUS_NM, 0.0)
+        ));
+        assert!(!Cuboid::path_end_is_in_container(
+            &Vec3::new(0.0, 0.0, 0.0),
+            &Vec3::new(RADIUS_NM + 1.0, 0.0, 0.0)
+        ));
+    }
+
+    #[test]
+    fn cuboid_intersection_updates_position_and_remaining_path() {
+        let mut start = Vec3::new(0.0, 0.0, 0.0);
+        let mut path = Vec3::new(2.0 * RADIUS_NM, RADIUS_NM / 2.0, 12.0);
+
+        Cuboid::caculate_intersection(&mut start, &mut path);
+
+        assert!((start[0] - RADIUS_NM).abs() < 1e-8);
+        assert!((start[1] - RADIUS_NM / 4.0).abs() < 1e-8);
+        assert!((start[2] - 6.0).abs() < 1e-8);
+        assert!((path[0] - RADIUS_NM).abs() < 1e-8);
+        assert!((path[1] - RADIUS_NM / 4.0).abs() < 1e-8);
+        assert!((path[2] - 6.0).abs() < 1e-8);
+    }
+
+    #[test]
+    fn cuboid_face_normal_points_inward() {
+        let normal = Cuboid::get_normal(Vec3::new(RADIUS_NM, 0.0, 0.0));
+        assert_eq!(normal, Vec3::new(-1.0, 0.0, 0.0));
+        assert!((normal.norm() - 1.0).abs() < f64::EPSILON);
+    }
+}
