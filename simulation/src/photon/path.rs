@@ -1,8 +1,7 @@
 use super::boundary::{Container, Cylinder};
-use crate::photon::{self, Photon};
+use crate::photon::Photon;
 use crate::simulat_const::{FREQUENCY, FREQUENCY_IDX, RADIUS_NM};
 use rand::RngExt;
-use std::f64::consts::PI;
 use vector::{Dot, Norm, Vec3};
 
 impl Photon {
@@ -40,11 +39,7 @@ impl Photon {
                         (n - self.direction * n.dot(self.direction)).normalize();
                 } else {
                     let path_2 = Cylinder::get_refraction_vec(incoming_direction, normal);
-                    let theta = path_2[0].clamp(-1.0, 1.0).acos();
-                    let theta =
-                        ((theta / PI * FREQUENCY as f64).floor() as usize).min(FREQUENCY_IDX - 1);
-                    theta_log[self.scattered as usize][theta] +=
-                        self.w * photon::get_i(&self.stokes_vector);
+                    Cylinder::log(theta_log, path_2, self, None);
                     return None;
                 }
             }

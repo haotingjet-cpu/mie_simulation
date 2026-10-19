@@ -1,4 +1,9 @@
-use crate::simulat_const::*;
+use std::f64::consts::PI;
+
+use crate::{
+    photon::{self, Photon},
+    simulat_const::*,
+};
 use rand::RngExt;
 use vector::{Dot, Norm, Vec3};
 
@@ -23,6 +28,13 @@ pub(crate) trait Container {
     fn get_normal(location: Vec3<f64>) -> Vec3<f64>;
 
     fn get_refraction_vec(path: Vec3<f64>, normal: Vec3<f64>) -> Vec3<f64>;
+
+    fn log(
+        theta_log: &mut [[f64; FREQUENCY_IDX]; 2],
+        v: Vec3<f64>,
+        photon: &mut Photon,
+        _location: Option<Vec3<f64>>,
+    );
 }
 
 /// # 外殼為無限延伸圓柱體
@@ -126,4 +138,21 @@ impl Container for Cylinder {
         // 回傳必然是單位向量
         path_2
     }
+
+    fn log(
+        theta_log: &mut [[f64; FREQUENCY_IDX]; 2],
+        v: Vec3<f64>,
+        photon: &mut Photon,
+        _location: Option<Vec3<f64>>,
+    ) {
+        let theta = v[0].clamp(-1.0, 1.0).acos();
+        let theta = ((theta / PI * FREQUENCY as f64).floor() as usize).min(FREQUENCY_IDX - 1);
+        theta_log[photon.scattered as usize][theta] +=
+            photon.w * photon::get_i(&photon.stokes_vector);
+    }
 }
+
+/// 長方體容器
+/// 長和寬皆為為 ` 2.0 * crate::simulat_const::RADIUS_NM`
+/// 高度無限長
+pub(crate) struct Cuboid;
