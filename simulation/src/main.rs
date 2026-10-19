@@ -9,12 +9,11 @@ use std::{thread, time};
 
 use crate::{get_cdf::get_cdf_fn, simulat_const::*};
 
-const WORKER_COUNT: usize = 16;
 type Histogram = [[f64; FREQUENCY_IDX]; 2];
 
 fn main() -> Result<(), Box<dyn Error>> {
     let show_progress = !no_progress_requested(std::env::args().skip(1));
-    let polyethylene = simulat_const::POLYETHYLENE;
+    let polyethylene = POLYETHYLENE;
     let bulkcoef = mie::get_mu::find_solution_mu_sta()?;
 
     println!("mu_t : {}", bulkcoef.mu_t);
