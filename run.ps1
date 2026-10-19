@@ -31,7 +31,7 @@ $ExePath = Join-Path $PSScriptRoot "target\release\simulation.exe"
 if (Test-Path $ExePath) {
     Write-Host "開始執行米氏散射模擬..." -ForegroundColor Cyan
     # 執行並捕獲輸出，轉為單一字串
-    $SmulateString = [string]((& $ExePath) -join "`n")
+    $SmulateString = [string]((& $ExePath --no_progress ) -join "`n")
 } else {
     $SmulateString = "錯誤：找不到米氏散射模擬執行檔，此為預設文字。"
 }

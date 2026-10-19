@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
 const SCALE: u32 = 10;
-pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<(), Box<dyn std::error::Error>> {
+pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<String, Box<dyn std::error::Error>> {
     if ballistic.len() != scattered.len() || ballistic.is_empty() {
         return Err(
             "ballistic and scattered distributions must have equal, non-zero lengths".into(),
@@ -136,6 +136,6 @@ pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<(), Box<dyn std::err
         .draw()?;
 
     root.present()?;
-    println!("圖片以儲存在 {}", output);
-    Ok(())
+    let word = format!("圖片以儲存在 {}", output);
+    Ok(word)
 }

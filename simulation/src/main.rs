@@ -13,10 +13,16 @@ const WORKER_COUNT: usize = 16;
 type Histogram = [[f64; FREQUENCY_IDX]; 2];
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let show_progress = !no_progress_requested(std::env::args().skip(1));
     let polyethylene = simulat_const::POLYETHYLENE;
     let bulkcoef = mie::get_mu::find_solution_mu_sta()?;
-    println!("mu_t = {}", bulkcoef.mu_t);
-    println!("mean free path = {}", 1.0 / bulkcoef.mu_t);
+
+    println!("mu_t : {}", bulkcoef.mu_t);
+    println!("自由路徑長 : {}", 1.0 / bulkcoef.mu_t);
+    println!("光子數 : {}", PHOTON_CONST);
+    println!("執行緒數量 : {}", WORKER_COUNT);
+    println!("每個 CHUNK : {}", CUT);
+
     let mul_theta = polyethylene.get_theta_vs_mueller_matrix()?;
 
     let cdf = get_cdf_fn(&mul_theta);
@@ -66,7 +72,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut last_progress = 0;
         loop {
             let current = completed.load(Ordering::Relaxed).min(PHOTON_CONST);
-            if current.saturating_sub(last_progress) >= progress_interval || current == PHOTON_CONST
+            if show_progress
+                && (current.saturating_sub(last_progress) >= progress_interval
+                    || current == PHOTON_CONST)
             {
                 update_progress(current, now)?;
                 last_progress = current;
@@ -101,11 +109,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     })?;
 
     println!();
-    println!("{:?}", now.elapsed());
+
+    println!("總耗時 : {:?}", now.elapsed());
     println!("{:?}", polyethylene);
     let ballistic = to_intensity_per_sr(&theta_log[0], PHOTON_CONST);
     let scattered = to_intensity_per_sr(&theta_log[1], PHOTON_CONST);
-    draw::draw(&ballistic, &scattered)?;
+    let word = draw::draw(&ballistic, &scattered)?;
+
+    if show_progress {
+        println!("{}", word);
+    }
     Ok(())
 }
 
@@ -184,8 +197,8 @@ fn format_duration(duration: time::Duration) -> String {
 #[cfg(test)]
 mod tests {
     use super::{
-        Histogram, add, estimate_remaining_time, format_duration, photons_in_chunk,
-        to_intensity_per_sr,
+        Histogram, add, estimate_remaining_time, format_duration, no_progress_requested,
+        photons_in_chunk, to_intensity_per_sr,
     };
     use std::f64::consts::PI;
     use std::time::Duration;
@@ -256,4 +269,15 @@ mod tests {
         assert_eq!(chunk_sizes.iter().sum::<usize>(), 23);
         assert_eq!(photons_in_chunk(0, 10, 0), None);
     }
+
+    #[test]
+    fn no_progress_flag_is_detected_without_matching_other_arguments() {
+        assert!(no_progress_requested(["simulation", "--no_progress"]));
+        assert!(!no_progress_requested(["simulation", "--no-progress"]));
+        assert!(!no_progress_requested(["simulation"]));
+    }
+}
+
+fn no_progress_requested(args: impl IntoIterator<Item = impl AsRef<str>>) -> bool {
+    args.into_iter().any(|arg| arg.as_ref() == "--no_progress")
 }
