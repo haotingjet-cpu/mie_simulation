@@ -23,7 +23,7 @@ pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<String, Box<dyn std:
         r_max += 0.5;
     }
 
-    let output: &str = "picture/mie_scattering_high_dpi.png";
+    let output: &str = "latest_result.png";
     let width = 1000 * SCALE;
     let height = 1000 * SCALE;
 
@@ -136,6 +136,6 @@ pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<String, Box<dyn std:
         .draw()?;
 
     root.present()?;
-    let word = format!("圖片以儲存在 {}", output);
+    let word = format!("圖片已儲存在 {}", output);
     Ok(word)
 }

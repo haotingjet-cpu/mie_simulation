@@ -113,6 +113,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("{:?}", polyethylene);
     let ballistic = to_intensity_per_sr(&theta_log[0], PHOTON_CONST);
     let scattered = to_intensity_per_sr(&theta_log[1], PHOTON_CONST);
+
+    if let Err(e) = write::storage_hdf5(&ballistic, &scattered) {
+        println!("hdf5 儲存失敗");
+        if show_progress {
+            println!("{e:?}");
+        }
+    }
+
     let word = write::draw(&ballistic, &scattered)?;
 
     if show_progress {
