@@ -7,4 +7,4 @@ edition = "2024"
 num-complex = "0.4.6"
 rand = "0.10.2"
 vector = { path = "../vector"}
-draw = {path = "../draw"}
+write = {path = "../write"}

@@ -6,7 +6,7 @@ use vector::{Vec3, Vec4};
 pub(crate) const POLYETHYLENE: mie::Particle = mie::Particle {
     m: Complex::new(1.4998, 0.0),
     diameter_nm: 1200.0,
-    molarity_mol_nm3: 1.6605e-36, // mol/nm^3
+    molarity_mol_nm3: 1.6605e-41, // mol/nm^3
 };
 
 pub(crate) const PHOTON: photon::Photon = photon::Photon {

@@ -113,7 +113,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("{:?}", polyethylene);
     let ballistic = to_intensity_per_sr(&theta_log[0], PHOTON_CONST);
     let scattered = to_intensity_per_sr(&theta_log[1], PHOTON_CONST);
-    let word = draw::draw(&ballistic, &scattered)?;
+    let word = write::draw(&ballistic, &scattered)?;
 
     if show_progress {
         println!("{}", word);

@@ -200,13 +200,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "draw"
-version = "0.1.0"
-dependencies = [
- "plotters",
-]
-
-[[package]]
 name = "dwrote"
 version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -688,10 +681,10 @@ checksum = "3a219298ac11a56ea9a6d2120044824d6f01aeb034955e7af7bc16858527deea"
 name = "simulation"
 version = "0.1.0"
 dependencies = [
- "draw",
  "num-complex",
  "rand",
  "vector",
+ "write",
 ]
 
 [[package]]
@@ -938,6 +931,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d129932f4644ac2396cb456385cbf9e63b5b30c6e8dc4820bdca4eb082037a5"
 dependencies = [
  "winapi",
+]
+
+[[package]]
+name = "write"
+version = "0.1.0"
+dependencies = [
+ "plotters",
 ]
 
 [[package]]
