@@ -13,5 +13,5 @@ pub fn storage_hdf5(
         .with_data(scattered)
         .create("scattered")?;
 
-    Err("test".into())
+    Ok(())
 }
