@@ -1,7 +1,16 @@
+use std::{
+    error::Error,
+    path::{Path, PathBuf},
+};
+
 use plotters::prelude::*;
 
 const SCALE: u32 = 10;
-pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<String, Box<dyn std::error::Error>> {
+pub fn draw(
+    ballistic: &[f64],
+    scattered: &[f64],
+    path: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
     if ballistic.len() != scattered.len() || ballistic.is_empty() {
         return Err(
             "ballistic and scattered distributions must have equal, non-zero lengths".into(),
@@ -23,7 +32,7 @@ pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<String, Box<dyn std:
         r_max += 0.5;
     }
 
-    let output: &str = "latest_result.png";
+    let output = &path;
     let width = 1000 * SCALE;
     let height = 1000 * SCALE;
 
@@ -138,4 +147,22 @@ pub fn draw(ballistic: &[f64], scattered: &[f64]) -> Result<String, Box<dyn std:
     root.present()?;
     let word = format!("圖片已儲存在 {}", output);
     Ok(word)
+}
+
+pub fn draw_from_hdf5(path: impl AsRef<Path> + Clone) -> Result<(), Box<dyn Error>> {
+    let file = hdf5::File::open(path.clone())?;
+
+    let scattered: Vec<f64> = file.dataset("scattered")?.read_raw()?;
+    let ballistic: Vec<f64> = file.dataset("ballistic")?.read_raw()?;
+
+    let output = convert_extension(path);
+    let output = output.to_str().unwrap();
+
+    draw(&ballistic, &scattered, output)?;
+    Ok(())
+}
+
+fn convert_extension(path: impl AsRef<Path>) -> PathBuf {
+    // 1. with_extension 會自動替換原本的副檔名（hdf5 變成 png）
+    path.as_ref().with_extension("png")
 }
