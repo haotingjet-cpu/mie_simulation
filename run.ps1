@@ -55,7 +55,7 @@ $SmulateString
 $MailMessage = New-Object System.Net.Mail.MailMessage($From, $To, $Subject, $Body)
 
 # 設定照片附件路徑
-$PhotoPath = "C:\rust\mie_simulate\picture\mie_scattering_high_dpi.png" 
+$PhotoPath = "C:\rust\mie_simulate\latest_result.png" 
 
 if (Test-Path $PhotoPath) {
     $Attachment = New-Object System.Net.Mail.Attachment($PhotoPath)
