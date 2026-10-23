@@ -12,8 +12,8 @@ use crate::{get_cdf::get_cdf_fn, simulat_const::*};
 type Histogram = [[f64; FREQUENCY_IDX]; 2];
 
 fn main() -> Result<(), Box<dyn Error>> {
-    write::draw_from_hdf5("result/2000/l.hdf5")?;
-    return Ok(());
+    // write::draw_from_hdf5("result/2000/l.hdf5")?;
+    // return Ok(());
     let show_progress = !no_progress_requested(std::env::args().skip(1));
     let polyethylene = POLYETHYLENE;
     let bulkcoef = mie::get_mu::find_solution_mu_sta()?;
